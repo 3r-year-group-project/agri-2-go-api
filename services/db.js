@@ -3,7 +3,7 @@ const conn = mysql.createConnection({
     host: 'localhost', 
     user: 'root',
     password: '',
-    database: 'agri-2-go'
+    database: 'agri-2-GO'
 });
 
 conn.connect();
