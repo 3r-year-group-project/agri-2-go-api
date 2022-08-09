@@ -7,4 +7,8 @@ router.route('/registration/paymentPlan')
 
 router.route('/registration/cardDetails')
     .post(controllers.updateCardPayment);
+
+router.route('/registration/personDetails')
+    .post(controllers.updatePersonalDetails);
+
 module.exports = router;

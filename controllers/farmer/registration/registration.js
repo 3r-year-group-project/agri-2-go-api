@@ -45,6 +45,23 @@ exports.updateCardPayment = (req,res,next)=>{
 
         }
     })
-    
-
 };
+
+exports.updatePersonalDetails = (req, res, next) => {
+   let sql = "UPDATE user SET first_name = ? , last_name = ? , user_type = ? , address1 = ? , address2 = ? , create_date=CURDATE() WHERE id = ?";
+   let values = [
+        req.body.firstName,
+        req.body.lastName,
+        req.body.userType,
+        req.body.address1,
+        req.body.address2,
+        req.body.id
+
+   ];
+   conn.query(sql,[req.body.id],(err,data) => {
+        res.status(204).json({
+            status:"successfully finished personal details"
+        }           
+        );
+   }); 
+}
