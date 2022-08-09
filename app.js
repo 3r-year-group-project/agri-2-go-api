@@ -3,9 +3,11 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var cors = require('cors');
 
 const router = require('./routes/index');
-var usersRouter = require('./routes/users/index');
+const usersRouter = require('./routes/users/index');
+const farmerRouter = require('./routes/farmer/index');
 const AppError = require('./utils/appError');
 const { error } = require('console');
 const errorHandler = require('./utils/errorHandler');
@@ -18,9 +20,19 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(cors(), function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
+
 
 app.use('/api', router);
 app.use('/api/users', usersRouter);
+app.use('/api/farmer',farmerRouter);
 
 app.all("*",(req,res, next) => {
   next(new AppError(`The URL ${req.originalUrl} does not exist`, 404));
