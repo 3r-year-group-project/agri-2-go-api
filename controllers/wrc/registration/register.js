@@ -30,10 +30,11 @@ exports.updateCardPayment = (req,res,next)=>{
             if(err) return next(new AppError(err,500));
             sql = "INSERT INTO `payment_card` (holder, card_number, expiry_date, cvv, user_id) VALUES (?, ?, ?, ?, ?)"; 
             values = [req.body.holder, req.body.cardNumber, req.body.expiry,req.body.cvv, req.body.id];
-            conn.query(sql,values,(err,data)=>{
+            let q = conn.query(sql,values,(err,data)=>{
                 if(err) return next(new AppError(err,500));
                 res.status(201).json({ status:"successfully add the payment details"});
-    });
+                });
+                
         }else{
             sql = "UPDATE payment_card SET holder=? , card_number=?, expiry_date=?, cvv=? WHERE user_id=?";
             values = [req.body.holder, req.body.cardNumber, req.body.expiry,req.body.cvv, req.body.id];

@@ -30,10 +30,11 @@ exports.updateCardPayment = (req,res,next)=>{
             if(err) return next(new AppError(err,500));
             sql = "INSERT INTO `payment_card` (holder, card_number, expiry_date, cvv, user_id) VALUES (?, ?, ?, ?, ?)"; 
             values = [req.body.holder, req.body.cardNumber, req.body.expiry,req.body.cvv, req.body.id];
-            conn.query(sql,values,(err,data)=>{
+            let q = conn.query(sql,values,(err,data)=>{
                 if(err) return next(new AppError(err,500));
                 res.status(201).json({ status:"successfully add the payment details"});
-    });
+                });
+                
         }else{
             sql = "UPDATE payment_card SET holder=? , card_number=?, expiry_date=?, cvv=? WHERE user_id=?";
             values = [req.body.holder, req.body.cardNumber, req.body.expiry,req.body.cvv, req.body.id];
@@ -49,24 +50,23 @@ exports.updateCardPayment = (req,res,next)=>{
 };
 
 exports.updatePersonalDetails = (req, res, next) => {
-    let sql = "UPDATE user SET first_name = ? , last_name = ? , user_type = ? , address1 = ? , address2 = ? , create_date=CURDATE(),city = ? WHERE id = ?";
-    let values = [
-         req.body.firstName,
-         req.body.lastName,
-         req.body.userType,
-         req.body.address1,
-         req.body.address2 == "empty" ? "" : req.body.address2,
-         req.body.city,
-         req.body.id
- 
-    ];
-    console.log(values);
-    var q = conn.query(sql,values,(err,data) => {
-          if(err) return next(new AppError(err,500));
-         res.status(204).json({
-             status:"successfully finished personal details"
-         }           
-         );
-    });
-    console.log(q.sql) 
- }
+   let sql = "UPDATE user SET first_name = ? , last_name = ? , user_type = ? , address1 = ? , address2 = ? , create_date=CURDATE() WHERE id = ?";
+   let values = [
+        req.body.firstName,
+        req.body.lastName,
+        req.body.userType,
+        req.body.address1,
+        req.body.address2 == "empty" ? "" : req.body.address2,
+        req.body.id
+
+   ];
+   console.log(values);
+   var q = conn.query(sql,values,(err,data) => {
+         if(err) return next(new AppError(err,500));
+        res.status(204).json({
+            status:"successfully finished personal details"
+        }           
+        );
+   });
+   console.log(q.sql) 
+}
