@@ -5,6 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors');
 
+
 const router = require('./routes/index');
 const usersRouter = require('./routes/users/index');
 const farmerRouter = require('./routes/farmer/index');
@@ -23,8 +24,8 @@ var app = express();
 
 
 app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.json({limit: '50mb'}));
+app.use(express.urlencoded({extended: true,limit: '50mb'}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors(), function(req, res, next) {
@@ -37,6 +38,7 @@ app.use(cors(), function(req, res, next) {
 });
 
 
+
 app.use('/api', router);
 app.use('/api/users', usersRouter);
 app.use('/api/farmer',farmerRouter);
@@ -46,6 +48,8 @@ app.use('/api/stockbuyer',stockbuyerRouter);
 app.use('/api/transporter',transporterRouter);
 app.use('/api/groceryseller',grocerysellerRouter);
 app.use('/api/customer',customerRouter);
+
+app.use("/public", express.static(path.join(__dirname, 'public')));
 
 
 
