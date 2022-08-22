@@ -23,7 +23,7 @@ exports.addNewVehicle = (req, res, next) => {
             
             require("fs").writeFileSync(path, base64Data,  {encoding: 'base64'});
             sql = "INSERT INTO vehicle (type, capacity, contact_number, image, driver_name, vehicle_number, user_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
-            let values = [req.body.vehicleType, req.body.vehicleCapacity, req.body.vehicleNumber, path1, req.body.driverName, req.body.vehicleNumber, id];
+            let values = [req.body.vehicleType, req.body.vehicleCapacity, req.body.contactNumber, path1, req.body.driverName, req.body.vehicleNumber, id];
             let q = conn.query(sql, values, (err, data) => {
             if(err) return next(new AppError(err,500));
             res.status(201).json({
