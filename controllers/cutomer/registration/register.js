@@ -49,6 +49,7 @@ exports.updateCardPayment = (req,res,next)=>{
 };
 
 exports.updatePersonalDetails = (req, res, next) => {
+    
    let sql = "UPDATE user SET first_name = ? , last_name = ? , user_type = ? , address1 = ? , address2 = ? , create_date=CURDATE(),city = ? WHERE id = ?";
    let values = [
         req.body.firstName,
