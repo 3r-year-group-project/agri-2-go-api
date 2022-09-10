@@ -18,7 +18,7 @@ try {
     
     require("fs").writeFileSync(path, base64Data,  {encoding: 'base64'});
 
-    var sql ="INSERT INTO `vegitable` (name, description, image) VALUES (?, ?, ?)"
+    var sql ="INSERT INTO `vegetable` (name, description, image) VALUES (?, ?, ?)"
     values = [req.body.name, req.body.description, path1];
     conn.query(sql, values,(err,data1)=>{
         if(err) return next(new AppError(err,500));
@@ -34,7 +34,7 @@ try {
 
 }
 exports.getAllVegetable=(req,res,next)=>{
-    const sql = "SELECT * FROM vegitable";
+    const sql = "SELECT * FROM vegetable";
     conn.query(sql,[],(err,data1)=>{
         if (err) return next(new AppError(err,500));
         res.status(200).json(
