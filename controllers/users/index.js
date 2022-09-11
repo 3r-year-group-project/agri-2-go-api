@@ -5,6 +5,7 @@ exports.getUserType = (req, res, next) => {
     conn.query('SELECT id,user_type FROM user WHERE email=?',[req.params.email],(err,data,fields) => {
         if(err) return next(new AppError(err));
         if(!(data && (data.length >0))){
+            
             let sql = "INSERT INTO user(email,user_type) VALUES (?,0)";
             conn.query(sql,[req.params.email],(err,res2) => {
                 if(err) return next(new AppError(err,500));
