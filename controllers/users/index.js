@@ -35,3 +35,23 @@ exports.getUserType = (req, res, next) => {
 exports.sayHello = () => {
     console.log('Hello world!');
 }
+
+exports.getAllNotifications =  async (req, res, next) => {
+    
+    conn.query('SELECT * FROM user WHERE email=?',[req.params.email],(err,data) => {
+        if(err) return next(new AppError(err));
+        userId = data[0].id;
+        conn.query('SELECT * FROM notification WHERE user_id=?',[userId],(err,data) => {
+            if(err) return next(new AppError(err));
+            res.status(200).json({
+                status : 'successfully get the notifications',
+                data : data
+            });
+        }
+    );
+    });
+
+       
+    
+    
+}

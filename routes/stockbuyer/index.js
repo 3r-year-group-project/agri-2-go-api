@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const controllers = require('../../controllers/groceryseller/registration/register');
+const controllers = require('../../controllers/stockbuyer/registration/register');
 const requestController = require('../../controllers/stockbuyer/requestHandler/index');
 router.route('/registration/paymentPlan')
     .post(controllers.paymentplanInsert);

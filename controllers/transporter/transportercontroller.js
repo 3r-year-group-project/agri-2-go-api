@@ -3,6 +3,14 @@ const { connect } = require('../../services/db');
 const conn = require('../../services/db');
 const AppError = require('../../utils/appError');
 
+async function getUserID(email){
+    let sql = "SELECT id FROM user WHERE email=?"
+    conn.query(sql, [email], (err, data) => {
+        if(err) return next(new AppError(err,500));
+        return id;
+    }
+    );
+}
 
 exports.addNewVehicle = (req, res, next) => {
     let sql = "SELECT id FROM user WHERE email=?"
@@ -62,3 +70,71 @@ exports.getVehicle = (req, res, next) => {
     }
     );
     };
+
+exports.removeVehicle = (req, res, next) => {
+    let sql = "DELETE FROM vehicle WHERE id=?";
+    conn.query(sql, [req.body.id], (err, data) => {
+        if(err) return next(new AppError(err,500));
+        res.status(200).json({
+            status: 'successfully remove the vehicle'
+        });
+    });
+
+};
+
+exports.getAllRequest = async (req, res, next) => {
+    let transporter_id = await getUserID(req.body.email);
+        conn.query("SELECT transport_request.id , transport_request.date , user.first_name , user.last_name , user.address1 , shop.shop_address , transport_request.payment, vegitable.name, user.phone FROM transport_request,user,shop,vegitable WHERE user.id = transport_request.seller_id AND transport_request.transporter_id = ? AND transport_request.shop_id = shop.id AND transport_request.status = '0' AND vegitable.id = transport_request.vege_id  ORDER BY id DESC", [transporter_id], (err, data1) => {
+            if(err) return next(new AppError(err,500));
+            res.status(200).json({
+                status: 'successfully get all requests',
+                data: data1
+            });
+        });  
+    
+};
+
+
+exports.takeRequest = async (req, res, next) => {
+    let transporter_id = await getUserID(req.body.email);
+    conn.query('SELECT * FROM transport_request WHERE id=? AND status!=?',[req.body.id,0],(err,data1)=>{
+        if(err) return next(new AppError(err,500));
+        if(data1.length>0){
+            res.status(200).json({
+                status: 'already taken',
+                data: data1
+            });
+        }
+        else{           
+            conn.query('UPDATE transport_request SET transporter_id=? , status=? WHERE id=?',[transporter_id,1,req.body.id],(err,data)=>{
+                if(err) return next(new AppError(err,500));
+                res.status(200).json({
+                    status: 'successfully taken',
+                    data: data
+                });
+            });
+        }
+    });
+};
+
+exports.declineRequest = async (req, res, next) => {
+    let transporter_id = await getUserID(req.body.email);
+    conn.query('SELECT * FROM transport_request WHERE id=? AND status!=?',[req.body.id,0],(err,data1)=>{
+        if(err) return next(new AppError(err,500));
+        if(data1.length>0){
+            res.status(200).json({
+                status: 'already taken',
+                data: data1
+            });
+        }
+        else{           
+            conn.query('UPDATE transport_request SET transporter_id=? , status=? WHERE id=?',[transporter_id,1,req.body.id],(err,data)=>{
+                if(err) return next(new AppError(err,500));
+                res.status(200).json({
+                    status: 'successfully taken',
+                    data: data
+                });
+            });
+        }
+    });
+};
