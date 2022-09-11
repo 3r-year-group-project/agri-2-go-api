@@ -11,4 +11,11 @@ router.route('/registration/cardDetails')
 router.route('/registration/personDetails')
     .post(controllers.updatePersonalDetails);
 
+router.route('/requests/sentrequests')
+    .post(requstsControllers.sentRequsts);
+
+router.route('/requests/declines_limit')
+    .post(requstsControllers.declinesLimit);
+
+
 module.exports = router;
