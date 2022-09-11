@@ -15,4 +15,7 @@ router.route('/registration/personDetails')
 router.route('/requests/sentrequests')
     .post(requstsControllers.sentRequsts);
 
+router.route('/requests/declines_limit')
+    .post(requstsControllers.declinesLimit);
+
 module.exports = router;
