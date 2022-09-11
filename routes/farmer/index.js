@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const controllers = require('../../controllers/farmer/registration/registration');
-const requstsControllers = require('../../controllers/farmer/requests/requests');
 
 router.route('/registration/paymentPlan')
     .post(controllers.paymentplanInsert);
