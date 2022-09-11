@@ -45,7 +45,7 @@ exports.getAllVegetable=(req,res,next)=>{
 
 }
 exports.deleteVeg=(req,res,next)=>{
-    const sql = "DELETE  FROM vegitable WHERE id=?";
+    const sql = "DELETE  FROM vegetable WHERE id=?";
     values= [req.params.ID]
     conn.query(sql,values,(err,data1)=>{
         if (err) return next(new AppError(err,500));
