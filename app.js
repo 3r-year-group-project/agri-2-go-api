@@ -9,12 +9,9 @@ var cors = require('cors');
 const router = require('./routes/index');
 const usersRouter = require('./routes/users/index');
 const farmerRouter = require('./routes/farmer/index');
-const gardenerRouter = require('./routes/gardener/index');
 const wrcRouter = require('./routes/wrc/index');
 const stockbuyerRouter = require('./routes/stockbuyer/index');
 const transporterRouter = require('./routes/transporter/index');
-const grocerysellerRouter = require('./routes/groceryseller/index');
-const customerRouter = require('./routes/customer/index');
 
 const AppError = require('./utils/appError');
 const { error } = require('console');
@@ -42,12 +39,10 @@ app.use(cors(), function(req, res, next) {
 app.use('/api', router);
 app.use('/api/users', usersRouter);
 app.use('/api/farmer',farmerRouter);
-app.use('/api/gardener',gardenerRouter);
 app.use('/api/wrc',wrcRouter);
 app.use('/api/stockbuyer',stockbuyerRouter);
 app.use('/api/transporter',transporterRouter);
-app.use('/api/groceryseller',grocerysellerRouter);
-app.use('/api/customer',customerRouter);
+
 
 app.use("/public", express.static(path.join(__dirname, 'public')));
 
