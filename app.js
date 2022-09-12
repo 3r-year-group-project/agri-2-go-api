@@ -12,8 +12,6 @@ const farmerRouter = require('./routes/farmer/index');
 const wrcRouter = require('./routes/wrc/index');
 const stockbuyerRouter = require('./routes/stockbuyer/index');
 const transporterRouter = require('./routes/transporter/index');
-const grocerysellerRouter = require('./routes/groceryseller/index');
-const customerRouter = require('./routes/customer/index');
 const adminRouter = require('./routes/admin/index');
 
 const AppError = require('./utils/appError');
@@ -45,8 +43,6 @@ app.use('/api/farmer',farmerRouter);
 app.use('/api/wrc',wrcRouter);
 app.use('/api/stockbuyer',stockbuyerRouter);
 app.use('/api/transporter',transporterRouter);
-app.use('/api/groceryseller',grocerysellerRouter);
-app.use('/api/customer',customerRouter);
 app.use('/api/admin',adminRouter);
 app.use("/public", express.static(path.join(__dirname, 'public')));
 
