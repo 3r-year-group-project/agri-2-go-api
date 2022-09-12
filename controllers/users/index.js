@@ -5,6 +5,7 @@ exports.getUserType = (req, res, next) => {
     conn.query('SELECT id,user_type FROM user WHERE email=?',[req.params.email],(err,data,fields) => {
         if(err) return next(new AppError(err));
         if(!(data && (data.length >0))){
+            
             let sql = "INSERT INTO user(email,user_type) VALUES (?,0)";
             conn.query(sql,[req.params.email],(err,res2) => {
                 if(err) return next(new AppError(err,500));
@@ -33,4 +34,24 @@ exports.getUserType = (req, res, next) => {
 
 exports.sayHello = () => {
     console.log('Hello world!');
+}
+
+exports.getAllNotifications =  async (req, res, next) => {
+    
+    conn.query('SELECT * FROM user WHERE email=?',[req.params.email],(err,data) => {
+        if(err) return next(new AppError(err));
+        userId = data[0].id;
+        conn.query('SELECT * FROM notification WHERE user_id=?',[userId],(err,data) => {
+            if(err) return next(new AppError(err));
+            res.status(200).json({
+                status : 'successfully get the notifications',
+                data : data
+            });
+        }
+    );
+    });
+
+       
+    
+    
 }

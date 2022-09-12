@@ -32,7 +32,21 @@ router.post('/vehicle/insert',upload.single('image'),tControllers.addNewVehicle)
 
 router.route('/vehicle/getall')
     .post(tControllers.getVehicle);
-    
+
+router.route('/vehicle/delete')
+    .post(tControllers.removeVehicle);
+
+router.route('/request/getall')
+    .post(tControllers.getAllRequest);
+
+router.route('/request/accept')
+    .post(tControllers.takeRequest);
+
+router.route('/chargers/exist/:email')
+    .get(tControllers.checkExistChargers);
+
+router.route('/Chargers/setcharges')
+    .post(tControllers.setChargers);    
 
 
 module.exports = router;
