@@ -42,7 +42,11 @@ router.route('/request/getall')
 router.route('/request/accept')
     .post(tControllers.takeRequest);
 
-    
+router.route('/chargers/exist/:email')
+    .get(tControllers.checkExistChargers);
+
+router.route('/Chargers/setcharges')
+    .post(tControllers.setChargers);    
 
 
 module.exports = router;
