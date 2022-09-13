@@ -4,6 +4,7 @@ const conn = require('../../services/db');
 const AppError = require('../../utils/appError');
 
 exports.addNewRequest = (req, res, next) => {
+    let status = 1;
     console.log("udhskjbgfuisdhfuiodshf")
     let sql = "SELECT id FROM user WHERE email=?"
     conn.query(sql, [req.body.email], (err, data) => {
@@ -26,9 +27,9 @@ exports.addNewRequest = (req, res, next) => {
             console.log("Attention!!!!!!!!!!!! "+req.body.fileName)
 
             
-            sql = "INSERT INTO selling_request (price,quantity,economic_center,vegetable) VALUES (?,?,?,?)";
+            sql = "INSERT INTO selling_request (price,quantity,economic_center,vegetable,farmer_id,status) VALUES (?,?,?,?,?,?)";
             console.log("Query running??");
-            let values = [req.body.price, req.body.quantity,req.body.ecocenter,req.body.vegetable];
+            let values = [req.body.price, req.body.quantity,req.body.ecocenter,req.body.vegetable,id,status];
             let q = conn.query(sql, values, function(err, result, fields){
             if(err) return next(new AppError(err,500));
             res.status(201).json({
@@ -66,8 +67,10 @@ exports.addNewRequest = (req, res, next) => {
 };
 
 exports.getVegetableList = (req, res, next) => {
+
+    console.log("Running!!!!!!!!!!!!!!!!")
     
-        sql = "SELECT * FROM vegitable";
+        sql = "SELECT * FROM vegetable";
         let q = conn.query(sql,(err, data1) => {
             if(err) return next(new AppError(err,500));
             res.status(200).json({
