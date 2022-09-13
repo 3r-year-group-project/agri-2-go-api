@@ -3,13 +3,17 @@ const { connect } = require('../../services/db');
 const conn = require('../../services/db');
 const AppError = require('../../utils/appError');
 
-async function getUserID(email){
+function getUserID(email){
     let sql = "SELECT id FROM user WHERE email=?"
-    conn.query(sql, [email], (err, data) => {
-        if(err) return next(new AppError(err,500));
-        return id;
-    }
-    );
+    return new Promise((resolve)=>{
+        conn.query(sql, [email], (err, data) => {
+            if(err) return next(new AppError(err,500));
+            resolve(data[0].id);    
+        }
+        );
+        
+    });
+    
 }
 
 exports.addNewVehicle = (req, res, next) => {
@@ -97,6 +101,7 @@ exports.getAllRequest = async (req, res, next) => {
 
 exports.takeRequest = async (req, res, next) => {
     let transporter_id = await getUserID(req.body.email);
+    console.log("transporter id",transporter_id);
     conn.query('SELECT * FROM transport_request WHERE id=? AND status!=?',[req.body.id,0],(err,data1)=>{
         if(err) return next(new AppError(err,500));
         if(data1.length>0){
@@ -137,4 +142,72 @@ exports.declineRequest = async (req, res, next) => {
             });
         }
     });
+};
+
+exports.checkExistChargers = async (req, res, next) => {
+    let transporter_id = await getUserID(req.params.email);
+    conn.query('SELECT * FROM trip_cost WHERE trip_cost.user_id = ?',[transporter_id],(err,data1)=>{
+        if(err) return next(new AppError(err,500));
+        if(data1.length>0){
+            res.status(200).json({
+                status: 'already exist',
+                data: data1,
+                code:true
+            });
+        }
+        else{           
+            res.status(200).json({
+                status: 'not exist',
+                data: data1,
+                code:false
+            });
+        }
+    });
+};
+
+exports.setChargers = async (req, res, next) => {
+    let transporter_id = await getUserID(req.body.email);
+    console.log(req.body);
+    if(req.body.existCode === false){
+        let sql = conn.query('INSERT INTO trip_cost(user_id, pickup_radius,cost_0_50, cost_50_150, cost_150_250, cost_250_500, cost_500_750, cost_750_1000, cost_1000_1500, cost_1500_2000) VALUES (?,?,?,?,?,?,?,?,?,?)',[
+            transporter_id,
+            req.body.pickUpRadius,
+            req.body.price0To50,
+            req.body.price50To150,
+            req.body.price150To250,
+            req.body.price250To500,
+            req.body.price500To750,
+            req.body.price750To1000,
+            req.body.price1000To1500,
+            req.body.price1500To2000,
+        ],(err,data)=>{
+            if(err) return next(new AppError(err,500));
+            res.status(201).json({
+                status: 'successfully insert the chargers',
+                data: data               
+            });
+
+        });
+        console.log(sql.sql);
+    }else{
+        let s = conn.query('UPDATE trip_cost SET pickup_radius=?,cost_0_50=?,cost_50_150=?,cost_150_250=?,cost_250_500=?,cost_500_750=?,cost_750_1000=?,cost_1000_1500=?,cost_1500_2000=? WHERE user_id=?',[
+            req.body.pickUpRadius,
+            req.body.price0To50,
+            req.body.price50To150,
+            req.body.price150To250,
+            req.body.price250To500,
+            req.body.price500To750,
+            req.body.price750To1000,
+            req.body.price1000To1500,
+            req.body.price1500To2000,
+            transporter_id,
+        ],(err,data)=>{
+            if(err) return next(new AppError(err,500));
+            res.status(204).json({
+                status: 'successfully update the chargers',
+                data: data               
+            });
+        });
+        console.log(s.sql);
+    }
 };
