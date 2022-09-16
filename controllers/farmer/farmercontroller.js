@@ -4,8 +4,8 @@ const conn = require('../../services/db');
 const AppError = require('../../utils/appError');
 
 exports.addNewRequest = (req, res, next) => {
+    console.log("new sell request came to the server");
     let status = 1;
-    console.log("udhskjbgfuisdhfuiodshf")
     let sql = "SELECT id FROM user WHERE email=?"
     conn.query(sql, [req.body.email], (err, data) => {
         if(err) return next(new AppError(err,500));
@@ -33,9 +33,9 @@ exports.addNewRequest = (req, res, next) => {
             let values = [req.body.price, req.body.quantity,req.body.ecocenter,req.body.vegetable,id,status,req.body.date];
             let q = conn.query(sql, values, function(err, result, fields){
             if(err) return next(new AppError(err,500));
-            res.status(201).json({
-            status: 'successfully add the selling request'
-            });
+            // res.status(201).json({
+            // status: 'successfully add the selling request'
+            // });
             console.log("Your insertion data reds:"+result.insertId)
             console.log("The PATH NEW!!!!!: "+path1)
             let sql2 = "INSERT INTO selling_request_images (image,selling_request_id,vegetable) VALUES (?,?,?)";
@@ -46,12 +46,13 @@ exports.addNewRequest = (req, res, next) => {
             res.status(201).json({
             status: 'successfully add the selling request images'
             });
-            
+            console.log("sql 2  ",q1.sql);
             
         });
             
         });
         console.log(q.sql);
+        
         
         
         
