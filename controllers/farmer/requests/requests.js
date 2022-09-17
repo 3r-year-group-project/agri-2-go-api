@@ -28,6 +28,26 @@ exports.sentRequsts = (req, res, next) => {
     );  
 };
 
+exports.resendRequestStateUpdate = (req, res, next) => {
+    let sql = "SELECT id FROM user WHERE email=?"
+    conn.query(sql, [req.body.email], (err, data) => {
+        if(err) return next(new AppError(err,500));
+        console.log(data);
+        let id = data[0].id;
+
+        sql = "UPDATE selling_request SET status=? WHERE id=?;";
+        let q = conn.query(sql, [REQUEST_STATE.CANCEL, req.body.id], (err, data1) => {
+            if(err) return next(new AppError(err,500));
+            res.status(200).json({
+                status: 'successfully get the sent requests',
+                data: data1
+            });
+        });  
+        console.log(q.sql);     
+    }
+    );  
+};
+
 exports.declinesLimit = (req, res, next) => {
     let sql = "SELECT id FROM user WHERE email=?"
     conn.query(sql, [req.body.email], (err, data) => {

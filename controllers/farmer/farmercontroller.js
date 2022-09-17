@@ -26,9 +26,9 @@ exports.addNewRequest = (req, res, next) => {
             console.log("Attention!!!!!!!!!!!! "+req.body.fileName)
 
             
-            sql = "INSERT INTO selling_request (price,quantity,economic_center,vegetable) VALUES (?,?,?,?)";
+            sql = "INSERT INTO selling_request (price,quantity,economic_center,status,vegetable,farmer_id) VALUES (?,?,?,?,?,?)";
             console.log("Query running??");
-            let values = [req.body.price, req.body.quantity,req.body.ecocenter,req.body.vegetable];
+            let values = [req.body.price, req.body.quantity,req.body.ecocenter,1,req.body.vegetable,id];
             let q = conn.query(sql, values, function(err, result, fields){
             if(err) return next(new AppError(err,500));
             res.status(201).json({
@@ -67,7 +67,7 @@ exports.addNewRequest = (req, res, next) => {
 
 exports.getVegetableList = (req, res, next) => {
     
-        sql = "SELECT * FROM vegitable";
+        sql = "SELECT * FROM vegetable";
         let q = conn.query(sql,(err, data1) => {
             if(err) return next(new AppError(err,500));
             res.status(200).json({
