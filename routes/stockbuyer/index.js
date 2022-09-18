@@ -19,7 +19,11 @@ router.route('/requesthandler/requestlist')
     .post(requestController.getRequestList);
 router.route('/requesthandler/decline')
     .post(requestController.declineRequest);
-    router.route('/stocks/getstock')
+
+router.route('/stocks/getstock')
     .post(requestController.getStockDetails);    
+
+router.route('/stocks/addwastagedetails')
+    .post(requestController.addWastageDetails);
 router.route('')    
 module.exports = router;

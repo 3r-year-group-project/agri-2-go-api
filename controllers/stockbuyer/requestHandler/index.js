@@ -75,3 +75,36 @@ exports.getStockDetails=(req,res,next)=>{
         
     });
 }
+
+
+
+exports.addWastageDetails=(req,res,next)=>{
+    console.log(req.body.id)
+    console.log(req.body.data.quantity)
+    const sql = "INSERT INTO wastage_details (order_id,vegetable,quantity) values(?,?,?)";
+    const sql1 ="SELECT quantity from selling_request WHERE id=? "
+    const sql2 = "UPDATE selling_request SET quantity=? WHERE ID=?";
+    conn.query(sql,[req.body.id,req.body.vegetable,req.body.data.quantity],(err,data1)=>{
+       
+        if (err) return next(new AppError(err,500))
+        conn.query(sql1,[req.body.id],(err,data2)=>{
+            console.log("Previous Quantity : "+data2[0].quantity)
+            console.log("Request Quantity : "+req.body.data.quantity)
+            let newQuantity = data2[0].quantity - req.body.data.quantity;
+            console.log("New Quantity : "+newQuantity);
+            conn.query(sql2,[newQuantity,req.body.id],(err,data2)=>{
+
+                if (err) return next(new AppError(err,500))
+                res.status(200).json(
+                    { status:'successfully added wastage details',
+                     data:data2,
+                     
+                    }
+                 )
+            })
+
+          
+            
+          
+    })})
+}
