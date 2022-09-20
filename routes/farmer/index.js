@@ -30,4 +30,18 @@ router.route('/requests/sentrequests')
 router.route('/requests/declines_limit')
     .post(requstsControllers.declinesLimit);
 
+router.route('/getFarmerDetails/:email')
+    .get(fControllers.getFarmerDetails);
+
+router.route('/updateLocation')
+    .post(fControllers.updateFarmerLocation);
+
+router.route('/updateBankDetails')
+    .post(fControllers.changeFarmerBankDetails);
+
+router.route('/updateFarmerDetails')
+    .post(fControllers.changeFarmerUserDetails);
+
+
+    
 module.exports = router;

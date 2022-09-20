@@ -3,6 +3,19 @@ const { connect } = require('../../services/db');
 const conn = require('../../services/db');
 const AppError = require('../../utils/appError');
 
+function getUserID(email){
+    let sql = "SELECT id FROM user WHERE email=?"
+    return new Promise((resolve)=>{
+        conn.query(sql, [email], (err, data) => {
+            if(err) return next(new AppError(err,500));
+            resolve(data[0].id);    
+        }
+        );
+        
+    });
+    
+}
+
 exports.addNewRequest = (req, res, next) => {
     console.log("new sell request came to the server");
     let status = 1;
@@ -96,4 +109,125 @@ exports.getVegetableList = (req, res, next) => {
         });  
         console.log(q.sql);    
 
+    };
+
+
+    exports.getFarmerDetails = (req, res, next) => {
+        let sql = "SELECT user.first_name , user.last_name, location.address , bank_account.bank_name, bank_account.branch_name , bank_account.account_name, bank_account.account_number FROM user,location,bank_account WHERE user.id = bank_account.user_id AND user.id = location.user_id AND user.email =  ?";
+        let q = conn.query(sql, [req.params.email], (err, data) => {
+            if(err) return next(new AppError(err,500));
+            res.status(200).json({
+                status: 'successfully got the farmer details',
+                data: data
+            });
+        });
+    };
+
+    exports.updateFarmerLocation = async (req, res, next) => {
+        let farmerId = await getUserID(req.body.email);
+        let values = [req.body.address,req.body.lon, req.body.lat,farmerId];
+        let s = conn.query('UPDATE location SET address=?,longitude=?,latitude=? WHERE user_id=?',values,(err, data) => {
+            if(err) return next(new AppError(err,500));
+            res.status(204).json({
+                status: 'successfully updated the farmer location',
+                data: data
+            });
+        });
+        console.log(s.sql);
+    };
+
+    exports.changeFarmerUserDetails = async (req, res, next) => {
+        console.log("Running!!!!!!!!!!!!!!!!");
+        console.log(req.body);
+        let farmerId = await getUserID(req.body.email);
+        let sql = "UPDATE user SET ";
+        let values = [];
+        let userUpdateStatus = false;
+        if(req.body.firstName){
+            sql+= "first_name=?";
+            values.push(req.body.firstName);
+            userUpdateStatus = true;
+        }
+        if(req.body.lastName && userUpdateStatus){
+            sql+= ", last_name=?";
+            values.push(req.body.lastName);
+            userUpdateStatus = true;
+        }else if(req.body.lastName && !userUpdateStatus){
+            sql+= " last_name=?";
+            values.push(req.body.lastName);
+            userUpdateStatus = true;
+        }
+        if(userUpdateStatus){
+            sql+= " WHERE id=?";
+            values.push(farmerId);
+            console.log("Running!!!!!!!!!!!!!!!! sql")
+            let s = conn.query(sql,values,(err, data) => {
+                if(err) return next(new AppError(err,500));
+                res.status(204).json({
+                    status: 'successfully updated the farmer details',
+                    data: data
+                });
+            });
+        }else{
+            res.status(204).json({
+                status: 'farmer details did not update',
+                
+            });
+        }
+    };
+
+    exports.changeFarmerBankDetails = async (req, res, next) => {
+        console.log(req.body);
+        let farmerId = await getUserID(req.body.email);
+        let sql = "UPDATE bank_account SET ";
+        let values = [];
+        let userUpdateStatus = false;
+        if(req.body.bankName != ''){
+            sql+= "bank_name=?";
+            values.push(req.body.bankName);
+            userUpdateStatus = true;
+        }
+        if(req.body.branchName && userUpdateStatus){
+            sql+= ", branch_name=?";
+            values.push(req.body.branchName);
+            userUpdateStatus = true;
+        }else if(req.body.branchName && !userUpdateStatus){
+            sql+= " branch_name=?";
+            values.push(req.body.branchName);
+            userUpdateStatus = true;
+        }
+        if(req.body.accountName && userUpdateStatus){
+            sql+= ", account_name=?";
+            values.push(req.body.accountName);
+            userUpdateStatus = true;
+        }else if(req.body.accountName && !userUpdateStatus){
+            sql+= " account_name=?";
+            values.push(req.body.accountName);
+            userUpdateStatus = true;
+        }
+        if(req.body.accountNumber && userUpdateStatus){
+            sql+= ", account_number=?";
+            values.push(req.body.accountNumber);
+            userUpdateStatus = true;
+        }else if(req.body.accountNumber && !userUpdateStatus){
+            sql+= " account_number=?";
+            values.push(req.body.accountNumber);
+            userUpdateStatus = true;
+        }
+        if(userUpdateStatus){
+            sql+= " WHERE user_id=?";
+            values.push(farmerId);
+            let s = conn.query(sql,values,(err, data) => {
+                if(err) return next(new AppError(err,500));
+                res.status(204).json({
+                    status: 'successfully updated the farmer bank details',
+                    data: data
+                });
+            });
+            console.log(s.sql);
+        }else{
+            res.status(200).json({
+                status: 'farmer bank details did not update',
+            });
+        }
     };
