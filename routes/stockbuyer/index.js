@@ -25,5 +25,9 @@ router.route('/stocks/getstock')
 
 router.route('/stocks/addwastagedetails')
     .post(requestController.addWastageDetails);
+
+router.route('/stocks/sellstocks')
+    .post(requestController.sellStock); 
+    
 router.route('')    
 module.exports = router;
