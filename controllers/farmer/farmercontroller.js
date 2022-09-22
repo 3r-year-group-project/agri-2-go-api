@@ -4,6 +4,7 @@ const conn = require('../../services/db');
 const AppError = require('../../utils/appError');
 
 exports.addNewRequest = (req, res, next) => {
+    let status = 1;
     console.log("udhskjbgfuisdhfuiodshf")
     let sql = "SELECT id FROM user WHERE email=?"
     conn.query(sql, [req.body.email], (err, data) => {
@@ -24,11 +25,12 @@ exports.addNewRequest = (req, res, next) => {
             require("fs").writeFileSync(path, base64Data,  {encoding: 'base64'});
 
             console.log("Attention!!!!!!!!!!!! "+req.body.fileName)
+            console.log("Date!!!!!!!!!!!!!!!!!!!!"+req.body.date);
 
-            
-            sql = "INSERT INTO selling_request (price,quantity,economic_center,status,vegetable,farmer_id) VALUES (?,?,?,?,?,?)";
+            sql = "INSERT INTO selling_request (price,quantity,economic_center,vegetable,farmer_id,status,deal_date) VALUES (?,?,?,?,?,?,?)";
             console.log("Query running??");
-            let values = [req.body.price, req.body.quantity,req.body.ecocenter,1,req.body.vegetable,id];
+            let values = [req.body.price, req.body.quantity,req.body.ecocenter,req.body.vegetable,id,status,req.body.date];
+
             let q = conn.query(sql, values, function(err, result, fields){
             if(err) return next(new AppError(err,500));
             res.status(201).json({
@@ -66,6 +68,8 @@ exports.addNewRequest = (req, res, next) => {
 };
 
 exports.getVegetableList = (req, res, next) => {
+
+    console.log("Running!!!!!!!!!!!!!!!!")
     
         sql = "SELECT * FROM vegetable";
         let q = conn.query(sql,(err, data1) => {
