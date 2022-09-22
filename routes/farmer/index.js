@@ -20,10 +20,17 @@ router.route('/sellrequest/insert').post(fControllers.addNewRequest);
 router.route('/sellrequest/getVegetableList').post(fControllers.getVegetableList);
 
 router.route('/sellrequest/getEconomicCentersList').post(fControllers.getEconomicCentersList);
+
 router.route('/requests/sentrequests')
     .post(requstsControllers.sentRequsts);
 
+router.route('/requests/resendrequest')
+    .post(requstsControllers.resendRequestStateUpdate);
+
 router.route('/requests/declines_limit')
     .post(requstsControllers.declinesLimit);
+
+router.route('/requests/declines_count')
+    .post(requstsControllers.declinesCount);
 
 module.exports = router;
