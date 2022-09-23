@@ -24,8 +24,16 @@ router.route('/sellrequest/getVegetableList')
 router.route('/sellrequest/getEconomicCentersList')
 .post(fControllers.getEconomicCentersList);
 
+router.route('/sellrequest/getEconomicCentersList').post(fControllers.getEconomicCentersList);
+
 router.route('/requests/sentrequests')
     .post(requstsControllers.sentRequsts);
+
+router.route('/requests/orders')
+    .post(requstsControllers.orders);
+    
+router.route('/requests/resendrequest')
+    .post(requstsControllers.resendRequestStateUpdate);
 
 router.route('/requests/declines_limit')
     .post(requstsControllers.declinesLimit);
@@ -44,4 +52,7 @@ router.route('/updateFarmerDetails')
 
 
     
+router.route('/requests/declines_count')
+    .post(requstsControllers.declinesCount);
+
 module.exports = router;
