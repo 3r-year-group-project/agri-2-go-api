@@ -85,3 +85,21 @@ exports.declinesCount = (req, res, next) => {
     }
     );  
 };
+
+exports.orders = (req, res, next) => {
+    let sql = "SELECT id FROM user WHERE email=?"
+    conn.query(sql, [req.body.email], (err, data) => {
+        if(err) return next(new AppError(err,500));
+        let id = data[0].id;
+
+        sql = "SELECT S.id as request_id, S.price, S.quantity, S.vegetable, E.id as economic_center_id, E.name as economic_center FROM selling_request as S INNER JOIN economic_center as E ON s.economic_center=e.name WHERE S.farmer_id=? AND S.status=?;"
+        let q = conn.query(sql, [id, REQUEST_STATE.ACCEPT], (err, data1) => {
+            if(err) return next(new AppError(err,500));
+            res.status(200).json({
+                status: 'successfully get the sent requests',
+                data: data1
+            });
+        });  
+        console.log(q.sql); 
+    })
+}

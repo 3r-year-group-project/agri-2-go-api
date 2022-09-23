@@ -24,6 +24,9 @@ router.route('/sellrequest/getEconomicCentersList').post(fControllers.getEconomi
 router.route('/requests/sentrequests')
     .post(requstsControllers.sentRequsts);
 
+router.route('/requests/orders')
+    .post(requstsControllers.orders);
+    
 router.route('/requests/resendrequest')
     .post(requstsControllers.resendRequestStateUpdate);
 
