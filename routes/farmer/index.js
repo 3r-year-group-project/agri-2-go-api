@@ -55,4 +55,13 @@ router.route('/updateFarmerDetails')
 router.route('/requests/declines_count')
     .post(requstsControllers.declinesCount);
 
+router.route('/requests/getBestTransporters')
+    .post(requstsControllers.getBestTransporters);
+
+router.route('/requests/getLocation/:email')
+    .get(requstsControllers.getLocation);
+
+router.route('/requests/sendRequest')
+    .post(requstsControllers.sendRequest);
+
 module.exports = router;
