@@ -1,3 +1,4 @@
+const { Console } = require('console');
 const { query } = require('express');
 const { connect } = require('../../services/db');
 const conn = require('../../services/db');
@@ -86,61 +87,65 @@ exports.removeVehicle = (req, res, next) => {
 
 };
 
+function getBuyerAddress(id){
+    let sql = "SELECT location.address FROM location, paid_orders WHERE location.user_id=paid_orders.buyer_id AND paid_orders.request_id =?"
+    return new Promise((resolve)=>{
+        conn.query(sql, [id], (err, data) => {
+            if(err) return next(new AppError(err,500));
+            resolve(data[0].address);    
+        }
+        );
+        
+    });
+    
+}
+
 exports.getAllRequest = async (req, res, next) => {
     let transporter_id = await getUserID(req.body.email);
-        conn.query("SELECT transport_request.id , transport_request.date , user.first_name , user.last_name , user.address1 , shop.shop_address , transport_request.payment, vegitable.name, user.phone FROM transport_request,user,shop,vegitable WHERE user.id = transport_request.seller_id AND transport_request.transporter_id = ? AND transport_request.shop_id = shop.id AND transport_request.status = '0' AND vegitable.id = transport_request.vege_id  ORDER BY id DESC", [transporter_id], (err, data1) => {
+        let s = conn.query("SELECT (SELECT location.address FROM location, paid_orders WHERE location.user_id=paid_orders.buyer_id AND paid_orders.request_id =transport_request.selling_request_id) AS buyer_address,transport_request.selling_request_id,transport_request.id, transport_request.date, transport_request.payment, selling_request.vegetable,user.first_name AS farmer_first_name, user.last_name AS farmer_last_name, location.address,selling_request.quantity,user.phone FROM transport_request,selling_request,user,location WHERE transport_request.selling_request_id=selling_request.id AND user.id = transport_request.farmer_id AND transport_request.transporter_id = ? AND transport_request.status = 1 AND location.user_id=transport_request.farmer_id;", [transporter_id], async (err, data1) => {
             if(err) return next(new AppError(err,500));
+            // let dataToSend = [];
+            // let address;
+            // await data1.map(async element => {
+            //     address = await getBuyerAddress(element.selling_request_id);
+            //     element.buyer_address = address;
+            //     dataToSend.push(element);
+            // });
+            
+            // console.log(dataToSend);
+
             res.status(200).json({
                 status: 'successfully get all requests',
                 data: data1
             });
-        });  
+        });
+        console.log(s.sql); 
     
 };
 
 
+
+
 exports.takeRequest = async (req, res, next) => {
-    let transporter_id = await getUserID(req.body.email);
-    console.log("transporter id",transporter_id);
-    conn.query('SELECT * FROM transport_request WHERE id=? AND status!=?',[req.body.id,0],(err,data1)=>{
+    conn.query('UPDATE transport_request SET status=2 WHERE selling_request_id=(SELECT selling_request_id FROM transport_request WHERE id=?)',[req.body.id],
+    (err, data1) => {
         if(err) return next(new AppError(err,500));
-        if(data1.length>0){
-            res.status(200).json({
-                status: 'already taken',
-                data: data1
+        conn.query('UPDATE transport_request SET status = 3 WHERE id = ?', [req.body.id], (err, data) => {
+            if(err) return next(new AppError(err,500));
+            res.status(204).json({
+                status: 'successfully take the request'
             });
-        }
-        else{           
-            conn.query('UPDATE transport_request SET transporter_id=? , status=? WHERE id=?',[transporter_id,1,req.body.id],(err,data)=>{
-                if(err) return next(new AppError(err,500));
-                res.status(200).json({
-                    status: 'successfully taken',
-                    data: data
-                });
-            });
-        }
+        });
     });
+    
 };
 
 exports.declineRequest = async (req, res, next) => {
-    let transporter_id = await getUserID(req.body.email);
-    conn.query('SELECT * FROM transport_request WHERE id=? AND status!=?',[req.body.id,0],(err,data1)=>{
+    conn.query('UPDATE transport_request  SET status=2 WHERE id=?',[req.body.id],(err, data1) => {
         if(err) return next(new AppError(err,500));
-        if(data1.length>0){
-            res.status(200).json({
-                status: 'already taken',
-                data: data1
-            });
-        }
-        else{           
-            conn.query('UPDATE transport_request SET transporter_id=? , status=? WHERE id=?',[transporter_id,1,req.body.id],(err,data)=>{
-                if(err) return next(new AppError(err,500));
-                res.status(200).json({
-                    status: 'successfully taken',
-                    data: data
-                });
-            });
-        }
+        res.status(204).json({
+            status: 'successfully decline the request'
+        });
     });
 };
 

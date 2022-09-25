@@ -42,6 +42,9 @@ router.route('/request/getall')
 router.route('/request/accept')
     .post(tControllers.takeRequest);
 
+router.route('/request/decline')
+    .post(tControllers.declineRequest);
+
 router.route('/chargers/exist/:email')
     .get(tControllers.checkExistChargers);
 

@@ -220,19 +220,7 @@ function getUserIDOfTheVechile(id){
     
 }
 
-/*
 
-{
-  id: '3',
-  vehicleId: 13,
-  dealDate: '2022-09-29',
-  cost: 92100,
-  quantity: '10',
-  distance: 614,
-  market: 'badulla'
-}
-
-*/
 
 
 
