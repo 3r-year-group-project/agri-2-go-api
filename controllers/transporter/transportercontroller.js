@@ -216,3 +216,48 @@ exports.setChargers = async (req, res, next) => {
         console.log(s.sql);
     }
 };
+
+
+exports.getAllAcceptedRequest = async (req, res, next) => {
+    let transporter_id = await getUserID(req.body.email);
+        let s = conn.query("SELECT (SELECT location.address FROM location, paid_orders WHERE location.user_id=paid_orders.buyer_id AND paid_orders.request_id =transport_request.selling_request_id) AS buyer_address,transport_request.selling_request_id,transport_request.id, transport_request.date, transport_request.payment, selling_request.vegetable,user.first_name AS farmer_first_name, user.last_name AS farmer_last_name, location.address,selling_request.quantity,user.phone,transport_request.status FROM transport_request,selling_request,user,location WHERE transport_request.selling_request_id=selling_request.id AND user.id = transport_request.farmer_id AND transport_request.transporter_id = ? AND transport_request.status IN (3,4) AND location.user_id=transport_request.farmer_id;", [transporter_id], async (err, data1) => {
+            if(err) return next(new AppError(err,500));
+            // let dataToSend = [];
+            // let address;
+            // await data1.map(async element => {
+            //     address = await getBuyerAddress(element.selling_request_id);
+            //     element.buyer_address = address;
+            //     dataToSend.push(element);
+            // });
+            
+            // console.log(dataToSend);
+
+            res.status(200).json({
+                status: 'successfully get all requests',
+                data: data1
+            });
+        });
+        console.log(s.sql); 
+};
+
+exports.startTrip = async (req, res, next) => {
+    console.log(req.body);
+    conn.query('SELECT selling_request.id FROM selling_request,transport_request WHERE selling_request.id = transport_request.selling_request_id AND transport_request.id=? AND selling_request.code=?'
+    ,[req.body.id,req.body.code],(err,data1)=>{
+        if(err) return next(new AppError(err,500));
+        if(data1.length>0){
+            conn.query('UPDATE transport_request SET status=4 WHERE id=?',[req.body.id],(err,data)=>{
+                if(err) return next(new AppError(err,500));
+                res.status(204).json({
+                    status: 'successfully start the trip',
+                    stCode:1
+                });
+            });
+        }else{
+            res.status(200).json({
+                status: 'wrong code',
+                stCode:0
+            });
+        }
+    });
+};
