@@ -11,7 +11,7 @@ exports.getRequestList=(req,res,next)=>{
         if (err){console.log(err) 
         return next(new AppError(err,500));}
      
-        const sql1 ="select user.first_name,user.last_name,user.id,selling_request.id as selling_req_id,price,date,quantity,selling_request.economic_center,status,vegetable,farmer_id from selling_request inner join user on user.id=selling_request.farmer_id where selling_request.economic_center=? and selling_request.status=? and selling_request.id not in (select decline_request.request_id from decline_request inner join user on user.id=decline_request.shop_id where user.email=?)";
+        const sql1 ="select user.first_name,user.last_name,user.id,selling_request.id as selling_req_id,price,date,deal_date,code,quantity,selling_request.economic_center,status,vegetable,farmer_id from selling_request inner join user on user.id=selling_request.farmer_id where selling_request.economic_center=? and selling_request.status=? and selling_request.id not in (select decline_request.request_id from decline_request inner join user on user.id=decline_request.shop_id where user.email=?)";
         conn.query(sql1,[data1[0].name,1,req.body.email],(err,data2)=>{
             if (err) {console.log(err) 
                 return next(new AppError(err,500));}
