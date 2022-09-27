@@ -81,10 +81,10 @@ exports.getStockDetails=(req,res,next)=>{
 exports.addWastageDetails=(req,res,next)=>{
     console.log(req.body.id)
     console.log(req.body.data.quantity)
-    const sql = "INSERT INTO wastage_details (order_id,vegetable,quantity) values(?,?,?)";
+    const sql = "INSERT INTO wastage_details (order_id,vegetable,quantity,quality) values(?,?,?,?)";
     const sql1 ="SELECT quantity from selling_request WHERE id=? "
     const sql2 = "UPDATE selling_request SET quantity=? WHERE ID=?";
-    conn.query(sql,[req.body.id,req.body.vegetable,req.body.data.quantity],(err,data1)=>{
+    conn.query(sql,[req.body.id,req.body.vegetable,req.body.data.quantity,req.body.data.quality],(err,data1)=>{
        
         if (err) return next(new AppError(err,500))
         conn.query(sql1,[req.body.id],(err,data2)=>{
