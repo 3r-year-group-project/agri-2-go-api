@@ -17,8 +17,8 @@ function getUserID(email){
 }
 
 exports.addNewRequest = (req, res, next) => {
-    console.log("new sell request came to the server");
     let status = 1;
+    console.log("udhskjbgfuisdhfuiodshf")
     let sql = "SELECT id FROM user WHERE email=?"
     conn.query(sql, [req.body.email], (err, data) => {
         if(err) return next(new AppError(err,500));
@@ -40,10 +40,10 @@ exports.addNewRequest = (req, res, next) => {
             console.log("Attention!!!!!!!!!!!! "+req.body.fileName)
             console.log("Date!!!!!!!!!!!!!!!!!!!!"+req.body.date);
 
+            
             sql = "INSERT INTO selling_request (price,quantity,economic_center,vegetable,farmer_id,status,deal_date) VALUES (?,?,?,?,?,?,?)";
             console.log("Query running??");
             let values = [req.body.price, req.body.quantity,req.body.ecocenter,req.body.vegetable,id,status,req.body.date];
-
             let q = conn.query(sql, values, function(err, result, fields){
             if(err) return next(new AppError(err,500));
             // res.status(201).json({
