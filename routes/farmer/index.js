@@ -26,4 +26,7 @@ router.route('/requests/sentrequests')
 router.route('/requests/declines_limit')
     .post(requstsControllers.declinesLimit);
 
+router.route('/transactions/getdetails')
+    .post(fControllers.getTransactionDetails)    
+
 module.exports = router;
