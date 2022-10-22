@@ -3,6 +3,7 @@ const AppError = require('../../utils/appError');
 
 exports.getUserType = (req, res, next) => {
     conn.query('SELECT id,user_type FROM user WHERE email=?',[req.params.email],(err,data,fields) => {
+        console.log(err);
         if(err) return next(new AppError(err));
         if(!(data && (data.length >0))){
             

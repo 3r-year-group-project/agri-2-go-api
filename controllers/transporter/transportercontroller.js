@@ -1,3 +1,4 @@
+const { Console } = require('console');
 const { query } = require('express');
 const { connect } = require('../../services/db');
 const conn = require('../../services/db');
@@ -86,59 +87,182 @@ exports.removeVehicle = (req, res, next) => {
 
 };
 
+function getBuyerAddress(id){
+    let sql = "SELECT location.address FROM location, paid_orders WHERE location.user_id=paid_orders.buyer_id AND paid_orders.request_id =?"
+    return new Promise((resolve)=>{
+        conn.query(sql, [id], (err, data) => {
+            if(err) return next(new AppError(err,500));
+            resolve(data[0].address);    
+        }
+        );
+        
+    });
+    
+}
+
 exports.getAllRequest = async (req, res, next) => {
     let transporter_id = await getUserID(req.body.email);
-        conn.query("SELECT transport_request.id , transport_request.date , user.first_name , user.last_name , user.address1 , shop.shop_address , transport_request.payment, vegitable.name, user.phone FROM transport_request,user,shop,vegitable WHERE user.id = transport_request.seller_id AND transport_request.transporter_id = ? AND transport_request.shop_id = shop.id AND transport_request.status = '0' AND vegitable.id = transport_request.vege_id  ORDER BY id DESC", [transporter_id], (err, data1) => {
+        let s = conn.query("SELECT (SELECT location.address FROM location, paid_orders WHERE location.user_id=paid_orders.buyer_id AND paid_orders.request_id =transport_request.selling_request_id) AS buyer_address,transport_request.selling_request_id,transport_request.id, transport_request.date, transport_request.payment, selling_request.vegetable,user.first_name AS farmer_first_name, user.last_name AS farmer_last_name, location.address,selling_request.quantity,user.phone FROM transport_request,selling_request,user,location WHERE transport_request.selling_request_id=selling_request.id AND user.id = transport_request.farmer_id AND transport_request.transporter_id = ? AND transport_request.status = 1 AND location.user_id=transport_request.farmer_id;", [transporter_id], async (err, data1) => {
             if(err) return next(new AppError(err,500));
+            // let dataToSend = [];
+            // let address;
+            // await data1.map(async element => {
+            //     address = await getBuyerAddress(element.selling_request_id);
+            //     element.buyer_address = address;
+            //     dataToSend.push(element);
+            // });
+            
+            // console.log(dataToSend);
+
             res.status(200).json({
                 status: 'successfully get all requests',
                 data: data1
             });
-        });  
+        });
+        console.log(s.sql); 
     
 };
 
 
+
+
 exports.takeRequest = async (req, res, next) => {
+    conn.query('UPDATE transport_request SET status=2 WHERE selling_request_id=(SELECT selling_request_id FROM transport_request WHERE id=?)',[req.body.id],
+    (err, data1) => {
+        if(err) return next(new AppError(err,500));
+        conn.query('UPDATE transport_request SET status = 3 WHERE id = ?', [req.body.id], (err, data) => {
+            if(err) return next(new AppError(err,500));
+            res.status(204).json({
+                status: 'successfully take the request'
+            });
+        });
+    });
+    
+};
+
+exports.declineRequest = async (req, res, next) => {
+    conn.query('UPDATE transport_request  SET status=2 WHERE id=?',[req.body.id],(err, data1) => {
+        if(err) return next(new AppError(err,500));
+        res.status(204).json({
+            status: 'successfully decline the request'
+        });
+    });
+};
+
+exports.checkExistChargers = async (req, res, next) => {
+
+    let transporter_id = await getUserID(req.params.email);
+
+    conn.query('SELECT * FROM trip_cost WHERE trip_cost.user_id = ?',[transporter_id],async (err,data1)=>{
     let transporter_id = await getUserID(req.body.email);
     console.log("transporter id",transporter_id);
     conn.query('SELECT * FROM transport_request WHERE id=? AND status!=?',[req.body.id,0],(err,data1)=>{
         if(err) return next(new AppError(err,500));
         if(data1.length>0){
             res.status(200).json({
-                status: 'already taken',
-                data: data1
+                status: 'already exist',
+                data: data1,
+                code:true
             });
         }
         else{           
-            conn.query('UPDATE transport_request SET transporter_id=? , status=? WHERE id=?',[transporter_id,1,req.body.id],(err,data)=>{
-                if(err) return next(new AppError(err,500));
-                res.status(200).json({
-                    status: 'successfully taken',
-                    data: data
-                });
+            res.status(200).json({
+                status: 'not exist',
+                data: data1,
+                code:false
             });
         }
     });
+});
 };
 
-exports.declineRequest = async (req, res, next) => {
+exports.setChargers = async (req, res, next) => {
     let transporter_id = await getUserID(req.body.email);
-    conn.query('SELECT * FROM transport_request WHERE id=? AND status!=?',[req.body.id,0],(err,data1)=>{
-        if(err) return next(new AppError(err,500));
-        if(data1.length>0){
+    console.log(req.body);
+    if(req.body.existCode === false){
+        let sql = conn.query('INSERT INTO trip_cost(user_id, pickup_radius,cost_0_50, cost_50_150, cost_150_250, cost_250_500, cost_500_750, cost_750_1000, cost_1000_1500, cost_1500_2000) VALUES (?,?,?,?,?,?,?,?,?,?)',[
+            transporter_id,
+            req.body.pickUpRadius,
+            req.body.price0To50,
+            req.body.price50To150,
+            req.body.price150To250,
+            req.body.price250To500,
+            req.body.price500To750,
+            req.body.price750To1000,
+            req.body.price1000To1500,
+            req.body.price1500To2000,
+        ],(err,data)=>{
+            if(err) return next(new AppError(err,500));
+            res.status(201).json({
+                status: 'successfully insert the chargers',
+                data: data               
+            });
+
+        });
+        console.log(sql.sql);
+    }else{
+        let s = conn.query('UPDATE trip_cost SET pickup_radius=?,cost_0_50=?,cost_50_150=?,cost_150_250=?,cost_250_500=?,cost_500_750=?,cost_750_1000=?,cost_1000_1500=?,cost_1500_2000=? WHERE user_id=?',[
+            req.body.pickUpRadius,
+            req.body.price0To50,
+            req.body.price50To150,
+            req.body.price150To250,
+            req.body.price250To500,
+            req.body.price500To750,
+            req.body.price750To1000,
+            req.body.price1000To1500,
+            req.body.price1500To2000,
+            transporter_id,
+        ],(err,data)=>{
+            if(err) return next(new AppError(err,500));
+            res.status(204).json({
+                status: 'successfully update the chargers',
+                data: data               
+            });
+        });
+        console.log(s.sql);
+    }
+};
+
+
+exports.getAllAcceptedRequest = async (req, res, next) => {
+    let transporter_id = await getUserID(req.body.email);
+        let s = conn.query("SELECT (SELECT location.address FROM location, paid_orders WHERE location.user_id=paid_orders.buyer_id AND paid_orders.request_id =transport_request.selling_request_id) AS buyer_address,transport_request.selling_request_id,transport_request.id, transport_request.date, transport_request.payment, selling_request.vegetable,user.first_name AS farmer_first_name, user.last_name AS farmer_last_name, location.address,selling_request.quantity,user.phone,transport_request.status FROM transport_request,selling_request,user,location WHERE transport_request.selling_request_id=selling_request.id AND user.id = transport_request.farmer_id AND transport_request.transporter_id = ? AND transport_request.status IN (3,4) AND location.user_id=transport_request.farmer_id;", [transporter_id], async (err, data1) => {
+            if(err) return next(new AppError(err,500));
+            // let dataToSend = [];
+            // let address;
+            // await data1.map(async element => {
+            //     address = await getBuyerAddress(element.selling_request_id);
+            //     element.buyer_address = address;
+            //     dataToSend.push(element);
+            // });
+            
+            // console.log(dataToSend);
+
             res.status(200).json({
-                status: 'already taken',
+                status: 'successfully get all requests',
                 data: data1
             });
-        }
-        else{           
-            conn.query('UPDATE transport_request SET transporter_id=? , status=? WHERE id=?',[transporter_id,1,req.body.id],(err,data)=>{
+        });
+        console.log(s.sql); 
+};
+
+exports.startTrip = async (req, res, next) => {
+    console.log(req.body);
+    conn.query('SELECT selling_request.id FROM selling_request,transport_request WHERE selling_request.id = transport_request.selling_request_id AND transport_request.id=? AND selling_request.code=?'
+    ,[req.body.id,req.body.code],(err,data1)=>{
+        if(err) return next(new AppError(err,500));
+        if(data1.length>0){
+            conn.query('UPDATE transport_request SET status=4 WHERE id=?',[req.body.id],(err,data)=>{
                 if(err) return next(new AppError(err,500));
-                res.status(200).json({
-                    status: 'successfully taken',
-                    data: data
+                res.status(204).json({
+                    status: 'successfully start the trip',
+                    stCode:1
                 });
+            });
+        }else{
+            res.status(200).json({
+                status: 'wrong code',
+                stCode:0
             });
         }
     });
