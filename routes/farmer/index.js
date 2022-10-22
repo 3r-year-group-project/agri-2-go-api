@@ -38,6 +38,9 @@ router.route('/requests/resendrequest')
 router.route('/requests/declines_limit')
     .post(requstsControllers.declinesLimit);
 
+router.route('/transactions/getdetails')
+    .post(fControllers.getTransactionDetails)    
+
 router.route('/getFarmerDetails/:email')
     .get(fControllers.getFarmerDetails);
 

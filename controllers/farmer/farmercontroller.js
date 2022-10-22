@@ -231,3 +231,26 @@ exports.getVegetableList = (req, res, next) => {
             });
         }
     };
+
+    exports.getTransactionDetails = (req,res,next) => {
+        console.log("Transactions are running!!!!!!!!")
+        let sql1 = "SELECT id FROM user WHERE email=?"
+        conn.query(sql1, [req.body.email], (err, data) => {
+        if(err) return next(new AppError(err,500));
+        console.log(data);
+        let id = data[0].id;
+
+        let sql2 = "SELECT p.date_time,p.min_advance,p.status,u.first_name,u.last_name FROM paid_orders p,user u WHERE p.farmer_id = ? AND p.buyer_id = u.id"; 
+        let values = [id]
+        let q = conn.query(sql2, values, (err, data1) => {
+            if(err) return next(new AppError(err,500));
+            res.status(200).json({
+                status: 'successfully get the stock',
+                data: data1
+            });
+        }); 
+
+        
+        })
+
+    }
