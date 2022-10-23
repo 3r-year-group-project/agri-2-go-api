@@ -75,3 +75,18 @@ exports.getAllNotifications =  async (req, res, next) => {
     
     
 }
+
+exports.clearNotifications = (req, res, next) => {
+    conn.query('SELECT * FROM user WHERE email=?',[req.params.email],(err,data) => {
+        if(err) return next(new AppError(err));
+        userId = data[0].id;
+        conn.query('UPDATE notification SET status = 1 WHERE user_id=?',[userId],(err,data1) => {
+            if(err) return next(new AppError(err));
+            res.status(200).json({
+                status : 'successfully clear the notifications',
+                data : data1
+            });
+        }
+    );
+    });
+};

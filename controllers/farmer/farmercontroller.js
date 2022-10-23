@@ -78,7 +78,7 @@ exports.addNewRequest = (req, res, next) => {
                                 let phone = data6[0].phone;
                                 let message = "You have a new request from "+req.body.email;
                                 sendEmail.sendEmail(email,'Agri2-GO','You have a new selling request from a farmer. Please check your dashboard for more details.');
-                                sendText.sendText(phone,'hello');
+                                sendText.sendText(phone,'You have a new selling request from a farmer. Please check your dashboard for more details.');
                             });
                             
                             let sql4 = "INSERT INTO notification (user_id,alert) VALUES (?,?)";
