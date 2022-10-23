@@ -229,18 +229,16 @@ exports.sendRequest = async (req, res, next) => {
     let farmerId = await getUserID(req.body.email);
     let transporterId = await getUserIDOfTheVechile(req.body.vehicleId);
     let values = [req.body.dealDate, farmerId, transporterId,1,req.body.cost, req.body.distance, req.body.id];
-    conn.query("INSERT INTO notification (id, user_id, alert, status, create_date) VALUES (NULL, ?, ?, '0', current_timestamp()) ",[transporterId,1],(err,data)=>{
+    conn.query("INSERT INTO notification (user_id, alert) VALUES (?, ?) ",[transporterId,0],(err,data)=>{
         if(err) return next(new AppError(err,500));
-        try{
-            // emailSender.sendEmail(req.body.email,'Transport request has come','You have a new transport request check agri2-go website');
-        }catch(e){
-            return next(new AppError(err,500));
-        }
-        try{
-            // smsSender.sendText('0770840267','You have a new transport request check agri2-go website');
-        }catch(e){
-            return next(new AppError(err,500));
-        } 
+        conn.query('SELECT email,phone FROM user WHERE id=?',[transporterId],(err,data6)=>{
+            if(err) return next(new AppError(err,500));
+            console.log(data6);
+            let email = data6[0].email;
+            let phone = data6[0].phone;
+            sendEmail.sendEmail(email,'Agri2-GO','You have a new transport request check the Agri2-GO app');
+            sendText.sendText(phone,'You have a new transport request check the Agri2-GO app');
+        });
         
     });
     let s = conn.query('INSERT INTO transport_request( date, farmer_id, transporter_id, status, payment,distance, selling_request_id) VALUES (?,?,?,?,?,?,?)',values,(err,data)=>{
