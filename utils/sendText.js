@@ -6,7 +6,12 @@ const axios = require('axios');
  * @param {String} message message to be sent
  */
 function sendText(to,message){
-    axios.get('https://www.textit.biz/sendmsg?id=94770840267&pw=1724&to='+to+'&text='+message)
+    const permission = true;
+    if(permission){
+        axios.get('https://www.textit.biz/sendmsg?id=94770840267&pw=1724&to='+to+'&text='+message)
         .then(res => {})
         .catch(err => {});
+    }
 }
+
+module.exports = { sendText };
