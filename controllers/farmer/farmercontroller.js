@@ -41,9 +41,9 @@ exports.addNewRequest = (req, res, next) => {
             console.log("Date!!!!!!!!!!!!!!!!!!!!"+req.body.date);
 
             
-            sql = "INSERT INTO selling_request (price,quantity,economic_center,vegetable,farmer_id,status,deal_date) VALUES (?,?,?,?,?,?,?)";
+            sql = "INSERT INTO selling_request (price,quantity,economic_center,vegetable,farmer_id,status,deal_date,initial_quantity) VALUES (?,?,?,?,?,?,?,?)";
             console.log("Query running??");
-            let values = [req.body.price, req.body.quantity,req.body.ecocenter,req.body.vegetable,id,status,req.body.date];
+            let values = [req.body.price, req.body.quantity,req.body.ecocenter,req.body.vegetable,id,status,req.body.date, req.body.quantity];
             let q = conn.query(sql, values, function(err, result, fields){
             if(err) return next(new AppError(err,500));
             // res.status(201).json({
@@ -245,7 +245,7 @@ exports.getVegetableList = (req, res, next) => {
         let q = conn.query(sql2, values, (err, data1) => {
             if(err) return next(new AppError(err,500));
             res.status(200).json({
-                status: 'successfully get the stock',
+                status: 'successfully get the transactions',
                 data: data1
             });
         }); 
@@ -253,4 +253,27 @@ exports.getVegetableList = (req, res, next) => {
         
         })
 
+    }
+
+    exports.getSalesDetails = async (req, res, next) => {
+
+        console.log("Ammo ammo mama duwanoo!")
+        let sql1 = "SELECT id FROM user WHERE email=?"
+        conn.query(sql1, [req.body.email], (err, data) => {
+        if(err) return next(new AppError(err,500));
+        console.log(data);
+        let id = data[0].id;
+
+        let sql2 = "SELECT status,vegetable,price,initial_quantity FROM selling_request WHERE farmer_id = ?"
+        let values = [id]
+        let q = conn.query(sql2, values, (err, data1) => {
+            if(err) return next(new AppError(err,500));
+            res.status(200).json({
+                status: 'successfully sales details obtained',
+                data: data1
+            });
+        });
+
+        })
+    
     }

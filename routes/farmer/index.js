@@ -67,4 +67,7 @@ router.route('/requests/getLocation/:email')
 router.route('/requests/sendRequest')
     .post(requstsControllers.sendRequest);
 
+router.route('/sales/getsales')
+    .post(fControllers.getSalesDetails)    
+
 module.exports = router;
