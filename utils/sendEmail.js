@@ -34,3 +34,5 @@ function sendEmail(to,subject,message){
     .then(console.log)
     .catch(console.log)
 }
+
+module.exports = { sendEmail };

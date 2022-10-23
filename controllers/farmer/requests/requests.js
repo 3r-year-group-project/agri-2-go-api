@@ -1,7 +1,8 @@
 const { query } = require('express');
 const conn = require('../../../services/db')
 const AppError = require('../../../utils/appError');
-
+const emailSender = require('../../../utils/sendEmail');
+const smsSender = require('../../../utils/sendText');
 
 function getUserID(email){
     let sql = "SELECT id FROM user WHERE email=?"
@@ -51,7 +52,7 @@ exports.sentRequsts = (req, res, next) => {
         console.log(data);
         let id = data[0].id;
 
-        sql = "SELECT S.id as request_id, S.price, S.quantity, S.vegetable, E.id as economic_center_id, E.name as economic_center FROM selling_request as S INNER JOIN economic_center as E ON s.economic_center=e.name WHERE S.farmer_id=? AND S.status=?;";
+        sql = "SELECT S.id as request_id, S.price, S.quantity, S.vegetable, E.id as economic_center_id, E.name as economic_center FROM selling_request as S INNER JOIN economic_center as E ON S.economic_center=E.name WHERE S.farmer_id=? AND S.status=?;";
         let q = conn.query(sql, [id, REQUEST_STATE.ACTIVE], (err, data1) => {
             if(err) return next(new AppError(err,500));
             res.status(200).json({
@@ -228,6 +229,18 @@ exports.sendRequest = async (req, res, next) => {
     let farmerId = await getUserID(req.body.email);
     let transporterId = await getUserIDOfTheVechile(req.body.vehicleId);
     let values = [req.body.dealDate, farmerId, transporterId,1,req.body.cost, req.body.distance, req.body.id];
+    conn.query("INSERT INTO notification (user_id, alert) VALUES (?, ?) ",[transporterId,0],(err,data)=>{
+        if(err) return next(new AppError(err,500));
+        conn.query('SELECT email,phone FROM user WHERE id=?',[transporterId],(err,data6)=>{
+            if(err) return next(new AppError(err,500));
+            console.log(data6);
+            let email = data6[0].email;
+            let phone = data6[0].phone;
+            sendEmail.sendEmail(email,'Agri2-GO','You have a new transport request check the Agri2-GO app');
+            sendText.sendText(phone,'You have a new transport request check the Agri2-GO app');
+        });
+        
+    });
     let s = conn.query('INSERT INTO transport_request( date, farmer_id, transporter_id, status, payment,distance, selling_request_id) VALUES (?,?,?,?,?,?,?)',values,(err,data)=>{
         if(err) return next(new AppError(err,500));
         res.status(201).json({
