@@ -132,6 +132,26 @@ exports.takeRequest = async (req, res, next) => {
         if(err) return next(new AppError(err,500));
         conn.query('UPDATE transport_request SET status = 3 WHERE id = ?', [req.body.id], (err, data) => {
             if(err) return next(new AppError(err,500));
+
+            conn.query('SELECT farmer_id FROM transport_request WHERE id=? ', [req.body.id], (err, data2) => {
+                if(err) return next(new AppError(err,500));
+                let farmerId = data2[0].farmer_id;
+                conn.query('INSERT INTO notification( user_id, alert) VALUES (?,?)',[farmerId,1],(err,data4)=>{
+                    if(err) return next(new AppError(err,500));
+                });
+
+                conn.query('SELECT email,phone FROM user WHERE id=?',[farmerId],(err,data6)=>{
+                    if(err) return next(new AppError(err,500));
+                    console.log(data6);
+                    let email = data6[0].email;
+                    let phone = data6[0].phone;
+                    let message = "You have a new request from "+req.body.email;
+                    sendEmail.sendEmail(email,'Agri2-GO','Your transport request is canceled');
+                    sendText.sendText(phone,'Your transport request is canceled.');
+                });
+
+            });
+
             res.status(204).json({
                 status: 'successfully take the request'
             });
@@ -143,6 +163,25 @@ exports.takeRequest = async (req, res, next) => {
 exports.declineRequest = async (req, res, next) => {
     conn.query('UPDATE transport_request  SET status=2 WHERE id=?',[req.body.id],(err, data1) => {
         if(err) return next(new AppError(err,500));
+
+        conn.query('SELECT farmer_id FROM transport_request WHERE id=? ', [req.body.id], (err, data2) => {
+            if(err) return next(new AppError(err,500));
+            let farmerId = data2[0].farmer_id;
+            conn.query('INSERT INTO notification( user_id, alert) VALUES (?,?)',[farmerId,2],(err,data4)=>{
+                if(err) return next(new AppError(err,500));
+            });
+
+            conn.query('SELECT email,phone FROM user WHERE id=?',[farmerId],(err,data6)=>{
+                if(err) return next(new AppError(err,500));
+                console.log(data6);
+                let email = data6[0].email;
+                let phone = data6[0].phone;
+                let message = "You have a new request from "+req.body.email;
+                sendEmail.sendEmail(email,'Agri2-GO','Your transport request is canceled');
+                sendText.sendText(phone,'Your transport request is canceled.');
+            });
+        });
+
         res.status(204).json({
             status: 'successfully decline the request'
         });

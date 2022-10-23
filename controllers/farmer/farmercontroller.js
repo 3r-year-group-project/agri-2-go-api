@@ -71,7 +71,7 @@ exports.addNewRequest = (req, res, next) => {
                     conn.query(sql3,[ecocenterId],(err, data4) => {
                         if(err) return next(new AppError(err,500));
                         data4.map((item) => {
-                            conn.query('SELECT email,phone FROM user WHERE id=?',[item.user_id,2],(err,data6)=>{
+                            conn.query('SELECT email,phone FROM user WHERE id=?',[item.user_id],(err,data6)=>{
                                 if(err) return next(new AppError(err,500));
                                 console.log(data6);
                                 let email = data6[0].email;
