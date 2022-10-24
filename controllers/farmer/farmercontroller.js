@@ -44,15 +44,9 @@ exports.addNewRequest = (req, res, next) => {
             console.log("Date!!!!!!!!!!!!!!!!!!!!"+req.body.date);
 
             
-<<<<<<< HEAD
-            sql = "INSERT INTO selling_request (price,quantity,economic_center,vegetable,farmer_id,status,deal_date,initial_quantity) VALUES (?,?,?,?,?,?,?,?)";
-            console.log("Query running??");
-            let values = [req.body.price, req.body.quantity,req.body.ecocenter,req.body.vegetable,id,status,req.body.date, req.body.quantity];
-=======
             sql = "INSERT INTO selling_request (price,quantity,economic_center,vegetable,farmer_id,status,deal_date,code) VALUES (?,?,?,?,?,?,?,?)";
             console.log("Query running??");
             let values = [req.body.price, req.body.quantity,req.body.ecocenter,req.body.vegetable,id,status,req.body.date,randomCode];
->>>>>>> dd677aa38bf18877d3bf3caaf930886933998646
             let q = conn.query(sql, values, function(err, result, fields){
             if(err) return next(new AppError(err,500));
             
