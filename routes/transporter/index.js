@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const controllers = require('../../controllers/transporter/registration/register');
 const tControllers = require('../../controllers/transporter/transportercontroller');
+const dashboardController = require('../../controllers/users/dashboard/index')
 const multer = require('multer')
 const path = require('path')
 
@@ -18,6 +19,12 @@ var storage = multer.diskStorage({
 var upload = multer({
     storage: storage
 });
+
+router.route('/dashboard/best_selling_items')
+    .get(dashboardController.bestSales)
+
+router.route('/dashboard/user_counts')
+    .get(dashboardController.userCounts)
 
 router.route('/registration/paymentPlan')
     .post(controllers.paymentplanInsert);

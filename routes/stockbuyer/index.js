@@ -4,6 +4,14 @@ const controllers = require('../../controllers/stockbuyer/registration/register'
 const requestController = require('../../controllers/stockbuyer/requestHandler/index');
 const paymentController = require('../../controllers/stockbuyer/paymentHandler/index')
 const orderController = require('../../controllers/stockbuyer/orderHandler/index')
+const dashboardController = require('../../controllers/users/dashboard/index')
+
+router.route('/dashboard/best_selling_items')
+    .get(dashboardController.bestSales)
+
+router.route('/dashboard/user_counts')
+    .get(dashboardController.userCounts)
+    
 router.route('/registration/paymentPlan')
     .post(controllers.paymentplanInsert);
 

@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const controllers = require('../../controllers/farmer/registration/registration');
-const dashboardController = require('../../controllers/farmer/dashboard/index')
 const fControllers = require('../../controllers/farmer/farmercontroller');
 const requstsControllers = require('../../controllers/farmer/requests/requests');
+const dashboardController = require('../../controllers/users/dashboard/index')
 
 router.route('/dashboard/best_selling_items')
     .get(dashboardController.bestSales)

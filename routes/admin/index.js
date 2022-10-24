@@ -4,6 +4,7 @@ const userControllers = require('../../controllers/admin/handleUsers/index');
 const vegetableController= require('../../controllers/admin/handleVegetable/index');
 const multer = require('multer')
 const path = require('path')
+const dashboardController = require('../../controllers/users/dashboard/index')
 
 //! Use of Multer
 var storage = multer.diskStorage({
@@ -18,6 +19,13 @@ var storage = multer.diskStorage({
 var upload = multer({
     storage: storage
 });
+
+router.route('/dashboard/best_selling_items')
+    .get(dashboardController.bestSales)
+
+router.route('/dashboard/user_counts')
+    .get(dashboardController.userCounts)
+
 router.route('/handluser/userlist')
     .get(userControllers.getUserList);
 
