@@ -4,6 +4,16 @@ const controllers = require('../../controllers/farmer/registration/registration'
 const fControllers = require('../../controllers/farmer/farmercontroller');
 const requstsControllers = require('../../controllers/farmer/requests/requests');
 const dashboardController = require('../../controllers/users/dashboard/index')
+const viewPriceController = require('../../controllers/farmer/view-prices')
+
+router.route('/viewprice/pricefluctuations')
+    .post(viewPriceController.minMaxPrice)
+
+router.route('/viewprice/markets')
+    .get(viewPriceController.markets)
+
+router.route('/viewprice/vegetables')
+    .get(viewPriceController.vegetables)
 
 router.route('/dashboard/best_selling_items')
     .get(dashboardController.bestSales)
