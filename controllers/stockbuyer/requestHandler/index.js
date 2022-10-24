@@ -84,10 +84,10 @@ exports.getStockDetails=(req,res,next)=>{
 exports.addWastageDetails=(req,res,next)=>{
     console.log(req.body.id)
     console.log(req.body.data.quantity)
-    const sql = "INSERT INTO wastage_details (order_id,vegetable,quantity,quality) values(?,?,?,?)";
+    const sql = "INSERT INTO wastage_details (order_id,vegetable,quantity,quality,price) values(?,?,?,?,?)";
     const sql1 ="SELECT quantity from selling_request WHERE id=? "
     const sql2 = "UPDATE selling_request SET quantity=? WHERE ID=?";
-    conn.query(sql,[req.body.id,req.body.vegetable,req.body.data.quantity,req.body.data.quality],(err,data1)=>{
+    conn.query(sql,[req.body.id,req.body.vegetable,req.body.data.quantity,req.body.data.quality,req.body.data.price],(err,data1)=>{
        
         if (err) return next(new AppError(err,500))
         conn.query(sql1,[req.body.id],(err,data2)=>{
@@ -142,4 +142,53 @@ exports.sellStock=(req,res,next) => {
           
     })})
 
+}
+
+exports.getTransactionDetails = (req,res,next) => {
+    console.log("Stock buyer tarsanctions!!!")
+    let sql1 = "SELECT id FROM user WHERE email=?"
+        conn.query(sql1, [req.body.email], (err, data) => {
+        if(err) return next(new AppError(err,500));
+        console.log(data);
+        let id = data[0].id;
+
+
+        let sql2 = "SELECT p.date_time,p.status,p.min_advance,u.first_name,u.last_name FROM paid_orders p,user u WHERE p.buyer_id = ? AND p.farmer_id=u.id" 
+        conn.query(sql2,[id],(err, data1) => {
+        if(err) return next(new AppError(err,500));
+        res.status(200).json({
+            status: 'successfully got the stock buyer transactions',
+            data: data1
+        });
+    }); 
+
+
+
+        })
+
+    
+
+}
+
+
+exports.getWastageStocksDetails = (req,res,next) => {
+    console.log("Stock buyer wastage details loading!!!!")
+    let sql1 = "SELECT id FROM user WHERE email=?"
+    conn.query(sql1, [req.body.email], (err, data) => {
+    if(err) return next(new AppError(err,500));
+    console.log(data);
+    let id = data[0].id;
+
+    let sql2 = "SELECT o.order_date,o.order_name,o.pickup_date,o.status,d.quality,d.quantity,d.price,u.first_name,u.last_name FROM wastage_orders o,wastage_details d,user u WHERE o.order_id=d.id AND o.wrc_id=u.id AND o.seller_id = ?";
+    conn.query(sql2,[id],(err, data1) => {
+        if(err) return next(new AppError(err,500));
+        res.status(200).json({
+            status: 'successfully got the stock buyer wastage stock details',
+            data: data1
+        });
+    }); 
+
+
+
+        })
 }
