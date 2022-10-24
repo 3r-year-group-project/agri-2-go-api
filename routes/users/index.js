@@ -8,4 +8,7 @@ router.route('/role/:email').get(controllers.getUserType);
 // get all notifications
 router.route('/notifications/:email').get(controllers.getAllNotifications);
 
+//clear read notification
+router.route('/notifications/clear/:email').put(controllers.clearNotifications);
+
 module.exports = router;
