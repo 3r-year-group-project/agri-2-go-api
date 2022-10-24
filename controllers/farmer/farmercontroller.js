@@ -276,9 +276,9 @@ exports.getVegetableList = (req, res, next) => {
                 data: data1
             });
         }); 
-
+        console.log(q.sql);
         
-        })
+        });
 
     }
 
