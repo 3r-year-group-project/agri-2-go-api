@@ -250,3 +250,10 @@ exports.sendRequest = async (req, res, next) => {
     });
     console.log(s.sql);
 };
+
+
+exports.getSalesDetails = async (req, res, next) => {
+
+    console.log("Ammo ammo mama duwanoo!")
+
+}
