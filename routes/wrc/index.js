@@ -21,6 +21,18 @@ router.route('/wastage/:id')
 router.route('/wastage')
     .get(wastageController.getWastageTypes); 
 router.route('/wastage')
-    .post(wastageController.createWastageTypes);   
+    .post(wastageController.createWastageTypes);
+router.route('/wastage_orders')
+    .get(wastageController.getWastageOrders);
+router.route('/wastage_orders')
+    .post(wastageController.wastageOrderFunctions);
+router.route('/wastage_details')
+    .get(wastageController.getWastageDetails)
+router.route('/wastage_detail_item_info/:id')
+    .get(wastageController.getWastageDetailsOrderId)
+router.route('/wastage_detail_user/:id')
+    .get(wastageController.getUserInfo)
+router.route('/wastage_add_request')
+    .post(wastageController.addWastageOrderRequest)
 
 module.exports = router;

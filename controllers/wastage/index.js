@@ -31,6 +31,144 @@ exports.getUserType = (req, res, next) => {
     });
     
 };
+
+exports.getWastageOrders = async(req, res, next) =>{
+    console.log('reaches')
+    
+    let sqlQuery = "SELECT * FROM wastage_orders";
+    conn.query(sqlQuery,(err, results)=>{
+        if(err) return next(new AppError(err));
+        res.status(200).json({
+            status: 'GetPaidOrders',
+            data: results
+        })
+        console.log(results)
+    })
+}
+
+exports.wastageOrderFunctions = async(req, res, next) => {
+    const {operation, orderId} = req.body
+    console.log(operation)
+    console.log(orderId)
+    switch(operation){
+        case "MarkCollected":
+           {
+                console.log('exec')
+                let sqlQuery = `UPDATE wastage_orders SET status = 'completed' WHERE order_id = ${orderId};`;
+                conn.query(sqlQuery,(err, results)=>{
+                    if(err) return next(new AppError(err));
+                    
+                        res.status(200).json({
+                            status: 'worders_status_change',
+                            data: results
+                        })
+                    console.log(results)
+                })
+            };
+        
+            // case "Cancel":
+            //     {
+            //          console.log('exec')
+            //          let sqlQuery = `UPDATE wastage_orders SET status = 'cancelled' WHERE order_id = ${orderId};`;
+            //          conn.query(sqlQuery,(err, results)=>{
+            //              if(err) return next(new AppError(err));
+                         
+            //                  res.status(200).json({
+            //                      status: 'worders_status_change',
+            //                      data: results
+            //                  })
+            //              console.log(results)
+            //          })
+            //      };
+        break;
+    }
+
+}  
+
+exports.getWastageDetails = async(req, res, next)=> {
+    let sqlQuery = "SELECT * FROM wastage_details";
+    conn.query(sqlQuery,(err, results)=>{
+        if(err) return next(new AppError(err));
+        res.status(200).json({
+            status: 'GetPaidOrders',
+            data: results
+        })
+        console.log(results)
+    })
+}
+
+exports.getWastageDetailsOrderId = async(req,res, next)=>{
+
+    const order_id = req.params 
+    let sqlQuery = `SELECT * FROM wastage_details WHERE id=${order_id.id}`
+    conn.query(sqlQuery,(err, results)=>{
+        if(err) console.log(err);
+        res.status(200).json({
+            status: 'GetPaidOrders',
+            data: results
+        })
+    })
+}
+
+exports.getUserInfo = async(req, res)=>{
+
+    const order_id = req.params
+    // let sqlQuery = `SELECT first_name, last_name FROM user WHERE id = (SELECT buyer_id FROM paid_orders WHERE
+    // request_id = (SELECT order_id FROM wastage_details WHERE id=${order_id.id}))`
+
+    let sqlQuery = `SELECT id,first_name,last_name,address1, city FROM user WHERE id=(SELECT buyer_id FROM paid_orders WHERE request_id = (SELECT order_id FROM wastage_details WHERE id=${order_id.id}))`
+    conn.query(sqlQuery, (err, results)=>{
+        if(err) console.log(err);
+        res.status(200).json({
+            status: 'GetPaidOrders',
+            data: results
+        })
+        console.log(results, 'sellersInfo')
+    })
+}
+
+exports.addWastageOrderRequest = async(req, res, next)=>{
+
+     const {userInfo, orderInfo, pickUpDate, sellerInfo, wastage_details_id} = req.body
+
+     console.log(userInfo)
+     console.log(orderInfo)
+     console.log(pickUpDate)
+     console.log(sellerInfo, 'sellerInfo')
+     console.log(wastage_details_id, 'wastage+details_id')
+
+     let userId;
+     let currentDate = new Date().toJSON().slice(0, 10);
+
+     
+     let sqlQuery1 = `SELECT id FROM user WHERE email like '${userInfo.email}'`
+     await conn.query(sqlQuery1, (err, results)=>{
+        if(err) return console.log(err)
+
+        userId = results
+        console.log(userId[0].id, 'userId')
+
+        addRequestOrder(userInfo, orderInfo, pickUpDate, sellerInfo, wastage_details_id, userId)
+      
+        // res.status(200).json({
+        //     status: 'GetPaidOrders',
+        //     data: results
+        // })
+
+     })
+
+        
+
+const addRequestOrder = async(userInfo, orderInfo, pickUpDate, sellerInfo, wastage_details_id, userId)=>{
+    let sqlQuery2 = `INSERT INTO wastage_orders (order_date, order_id, wrc_id, seller_id, order_name, pickup_date, status ) VALUES ( '${currentDate}', ${wastage_details_id}, ${userId[0].id}, ${sellerInfo.id}, '${orderInfo.vegetable}', '${pickUpDate}','pending')`
+        
+    await conn.query(sqlQuery2, (err, results)=>{
+         if(err) return console.log(err)
+         console.log(results)
+     })
+}
+}
+
 exports.createWastageTypes =  async(req, res, next) => {
     let data = {category: req.body.category, quality_level: req.body.level, price:req.body.price};
     
