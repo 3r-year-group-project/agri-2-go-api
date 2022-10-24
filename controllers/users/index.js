@@ -42,11 +42,30 @@ exports.getAllNotifications =  async (req, res, next) => {
     conn.query('SELECT * FROM user WHERE email=?',[req.params.email],(err,data) => {
         if(err) return next(new AppError(err));
         userId = data[0].id;
-        conn.query('SELECT * FROM notification WHERE user_id=?',[userId],(err,data) => {
+        userType = "";
+        switch(data[0].user_type){
+            case 7: userType = "transporter"; break;
+            case 1: userType = "admin"; break;
+            case 5: userType = "stockBuyer"; break;
+            case 3: userType = "farmer"; break;
+            case 8: userType = "wrc"; break;
+        };
+        conn.query('SELECT * FROM notification WHERE user_id=? AND status = 0',[userId],(err,data1) => {
             if(err) return next(new AppError(err));
+            let data2 = [];
+            data1.map((item) => {
+                let date1 = new Date(item.create_date);
+                data2.push({
+                    alert:item.alert,
+                    date: date1.toLocaleTimeString('en-US'),
+                });
+            });
             res.status(200).json({
                 status : 'successfully get the notifications',
-                data : data
+                data : {
+                    userType : userType,
+                    notification : data2,
+                }
             });
         }
     );
@@ -56,3 +75,18 @@ exports.getAllNotifications =  async (req, res, next) => {
     
     
 }
+
+exports.clearNotifications = (req, res, next) => {
+    conn.query('SELECT * FROM user WHERE email=?',[req.params.email],(err,data) => {
+        if(err) return next(new AppError(err));
+        userId = data[0].id;
+        conn.query('UPDATE notification SET status = 1 WHERE user_id=?',[userId],(err,data1) => {
+            if(err) return next(new AppError(err));
+            res.status(200).json({
+                status : 'successfully clear the notifications',
+                data : data1
+            });
+        }
+    );
+    });
+};

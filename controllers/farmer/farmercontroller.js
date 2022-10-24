@@ -2,6 +2,8 @@ const { query } = require('express');
 const { connect } = require('../../services/db');
 const conn = require('../../services/db');
 const AppError = require('../../utils/appError');
+const sendEmail = require('../../utils/sendEmail');
+const sendText = require('../../utils/sendText');
 
 function getUserID(email){
     let sql = "SELECT id FROM user WHERE email=?"
@@ -18,7 +20,8 @@ function getUserID(email){
 
 exports.addNewRequest = (req, res, next) => {
     let status = 1;
-    console.log("udhskjbgfuisdhfuiodshf")
+    console.log("udhskjbgfuisdhfuiodshf");
+    let randomCode = Math.floor(1000 + Math.random() * 9999);
     let sql = "SELECT id FROM user WHERE email=?"
     conn.query(sql, [req.body.email], (err, data) => {
         if(err) return next(new AppError(err,500));
@@ -41,30 +44,54 @@ exports.addNewRequest = (req, res, next) => {
             console.log("Date!!!!!!!!!!!!!!!!!!!!"+req.body.date);
 
             
-            sql = "INSERT INTO selling_request (price,quantity,economic_center,vegetable,farmer_id,status,deal_date) VALUES (?,?,?,?,?,?,?)";
+            sql = "INSERT INTO selling_request (price,quantity,economic_center,vegetable,farmer_id,status,deal_date,code,initial_quantity) VALUES (?,?,?,?,?,?,?,?,?)";
             console.log("Query running??");
-            let values = [req.body.price, req.body.quantity,req.body.ecocenter,req.body.vegetable,id,status,req.body.date];
+            let values = [req.body.price, req.body.quantity,req.body.ecocenter,req.body.vegetable,id,status,req.body.date,randomCode,req.body.quantity];
             let q = conn.query(sql, values, function(err, result, fields){
             if(err) return next(new AppError(err,500));
-            // res.status(201).json({
-            // status: 'successfully add the selling request'
-            // });
-            console.log("Your insertion data reds:"+result.insertId)
-            console.log("The PATH NEW!!!!!: "+path1)
+            
             let sql2 = "INSERT INTO selling_request_images (image,selling_request_id,vegetable) VALUES (?,?,?)";
-            console.log("Query2 runninG!!!!!!!!!");
             let values1 = [path1,result.insertId,req.body.vegetable];
             let q1 = conn.query(sql2, values1, function(err, result, fields){
             if(err) return next(new AppError(err,500));
             res.status(201).json({
             status: 'successfully add the selling request images'
             });
-            console.log("sql 2  ",q1.sql);
+            
             
         });
             
         });
+
         console.log(q.sql);
+
+        conn.query('SELECT id FROM economic_center WHERE name=?',
+                [req.body.ecocenter],(err, data3) => {
+                    if(err) return next(new AppError(err,500));
+                    let ecocenterId = data3[0].id;
+                    let sql3 = "SELECT user_id FROM shop WHERE eco_center_id=?";
+                    conn.query(sql3,[ecocenterId],(err, data4) => {
+                        if(err) return next(new AppError(err,500));
+                        data4.map((item) => {
+                            conn.query('SELECT email,phone FROM user WHERE id=?',[item.user_id],(err,data6)=>{
+                                if(err) return next(new AppError(err,500));
+                                console.log(data6);
+                                let email = data6[0].email;
+                                let phone = data6[0].phone;
+                                let message = "You have a new request from "+req.body.email;
+                                sendEmail.sendEmail(email,'Agri2-GO','You have a new selling request from a farmer. Please check your dashboard for more details.');
+                                sendText.sendText(phone,'You have a new selling request from a farmer. Please check your dashboard for more details.');
+                            });
+                            
+                            let sql4 = "INSERT INTO notification (user_id,alert) VALUES (?,?)";
+                            conn.query(sql4,[item.user_id,2],(err, data5) => {
+                                if(err) return next(new AppError(err,500));
+                            });
+                        });
+                    });
+                }
+                );
+        
         
         
         
@@ -231,3 +258,49 @@ exports.getVegetableList = (req, res, next) => {
             });
         }
     };
+
+    exports.getTransactionDetails = (req,res,next) => {
+        console.log("Transactions are running!!!!!!!!")
+        let sql1 = "SELECT id FROM user WHERE email=?"
+        conn.query(sql1, [req.body.email], (err, data) => {
+        if(err) return next(new AppError(err,500));
+        console.log(data);
+        let id = data[0].id;
+
+        let sql2 = "SELECT p.date_time,p.min_advance,p.status,u.first_name,u.last_name FROM paid_orders p,user u WHERE p.farmer_id = ? AND p.buyer_id = u.id"; 
+        let values = [id]
+        let q = conn.query(sql2, values, (err, data1) => {
+            if(err) return next(new AppError(err,500));
+            res.status(200).json({
+                status: 'successfully get the transactions',
+                data: data1
+            });
+        }); 
+
+        
+        })
+
+    }
+
+    exports.getSalesDetails = async (req, res, next) => {
+
+        console.log("Ammo ammo mama duwanoo!")
+        let sql1 = "SELECT id FROM user WHERE email=?"
+        conn.query(sql1, [req.body.email], (err, data) => {
+        if(err) return next(new AppError(err,500));
+        console.log(data);
+        let id = data[0].id;
+
+        let sql2 = "SELECT status,vegetable,price,initial_quantity FROM selling_request WHERE farmer_id = ?"
+        let values = [id]
+        let q = conn.query(sql2, values, (err, data1) => {
+            if(err) return next(new AppError(err,500));
+            res.status(200).json({
+                status: 'successfully sales details obtained',
+                data: data1
+            });
+        });
+
+        })
+    
+    }

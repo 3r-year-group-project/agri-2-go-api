@@ -11,7 +11,7 @@ router.route('/dashboard/best_selling_items')
 
 router.route('/dashboard/user_counts')
     .get(dashboardController.userCounts)
-    
+
 router.route('/registration/paymentPlan')
     .post(controllers.paymentplanInsert);
 
@@ -24,25 +24,11 @@ router.route('/registration/personDetails')
 router.route('/registration/shopdetails')
     .post(controllers.insertShopDetails);
 
+
 router.route('/requesthandler/requestlist')
     .post(requestController.getRequestList);
-
 router.route('/requesthandler/decline')
     .post(requestController.declineRequest);
-   
-router.route('/paymethandler/pay')
-    .post(paymentController.pay);
-
-router.post('/webhook', paymentController.webhookhandler);
-router.route('/orderhandler/getorders/:email')
-    .get(orderController.getOrders);
-
-router.route('/orderhandler/recievedorderdetailsupdate')
-    .post(orderController.updateOrderStatus);
-
-router.route('/paymethandler/recievedorderupdate')
-    .post(paymentController.payRemainingAmount);
-router.post('/remain/webhook', paymentController.remainWebhookhandler);
 
 router.route('/stocks/getstock')
     .post(requestController.getStockDetails);    
@@ -52,6 +38,12 @@ router.route('/stocks/addwastagedetails')
 
 router.route('/stocks/sellstocks')
     .post(requestController.sellStock); 
+
+router.route('/transactions/getdetails')
+    .post(requestController.getTransactionDetails)   
+    
+router.route('/wastagestocks/getdetails')
+    .post(requestController.getWastageStocksDetails)    
     
 router.route('')    
 module.exports = router;

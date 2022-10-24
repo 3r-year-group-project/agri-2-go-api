@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const userControllers = require('../../controllers/admin/handleUsers/index');
 const vegetableController= require('../../controllers/admin/handleVegetable/index');
+const adminController = require('../../controllers/admin/adminController');
 const multer = require('multer')
 const path = require('path')
 const dashboardController = require('../../controllers/users/dashboard/index')
@@ -38,4 +39,17 @@ router.route('/handlevegetable/getall')
     .get(vegetableController.getAllVegetable);
 router.route('/handlevegetable/delete/:ID')
     .get(vegetableController.deleteVeg);
+
+router.route('/get/farmer/revenue')
+    .get(adminController.FarmerRevenue);
+
+router.route('/release/farmer/fund/:id')
+    .put(adminController.releaseFarmerFund);
+
+router.route('/get/transporter/revenue')
+    .get(adminController.getTransporterRevenue);
+
+router.route('/release/transporter/fund/:id')
+    .put(adminController.releaseTransporterFund);
+
 module.exports = router;
