@@ -169,3 +169,26 @@ exports.getTransactionDetails = (req,res,next) => {
     
 
 }
+
+
+exports.getWastageStocksDetails = (req,res,next) => {
+    console.log("Stock buyer wastage details loading!!!!")
+    let sql1 = "SELECT id FROM user WHERE email=?"
+    conn.query(sql1, [req.body.email], (err, data) => {
+    if(err) return next(new AppError(err,500));
+    console.log(data);
+    let id = data[0].id;
+
+    let sql2 = "SELECT o.order_date,o.order_name,o.pickup_date,o.status,d.quality,d.quantity,d.price,u.first_name,u.last_name FROM wastage_orders o,wastage_details d,user u WHERE o.order_id=d.id AND o.wrc_id=u.id AND o.seller_id = ?";
+    conn.query(sql2,[id],(err, data1) => {
+        if(err) return next(new AppError(err,500));
+        res.status(200).json({
+            status: 'successfully got the stock buyer wastage stock details',
+            data: data1
+        });
+    }); 
+
+
+
+        })
+}

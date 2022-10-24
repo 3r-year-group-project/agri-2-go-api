@@ -30,7 +30,10 @@ router.route('/stocks/sellstocks')
     .post(requestController.sellStock); 
 
 router.route('/transactions/getdetails')
-    .post(requestController.getTransactionDetails)    
+    .post(requestController.getTransactionDetails)   
+    
+router.route('/wastagestocks/getdetails')
+    .post(requestController.getWastageStocksDetails)    
     
 router.route('')    
 module.exports = router;
