@@ -63,6 +63,8 @@ exports.addNewRequest = (req, res, next) => {
             
         });
 
+        console.log(q.sql);
+
         conn.query('SELECT id FROM economic_center WHERE name=?',
                 [req.body.ecocenter],(err, data3) => {
                     if(err) return next(new AppError(err,500));
