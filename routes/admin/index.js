@@ -52,4 +52,16 @@ router.route('/get/transporter/revenue')
 router.route('/release/transporter/fund/:id')
     .put(adminController.releaseTransporterFund);
 
+router.route('/get/revenue/rate')
+    .get(adminController.getRevenueRates);
+
+router.route('/update/revenue/rate/farmer/:revenueRate')
+    .put(adminController.updateFarmerRevenueRate);
+
+router.route('/update/revenue/rate/transporter/:revenueRate')
+    .put(adminController.updateTranporterRevenueRate);
+
+router.route('/update/revenue/rate/WRC/:revenueRate')
+    .put(adminController.updateWRCRevenueRate);
+
 module.exports = router;

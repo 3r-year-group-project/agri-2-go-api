@@ -106,23 +106,50 @@ exports.releaseTransporterFund = (req, res, next) => {
     });
 };
 
-exports.updateRevenueRate = (req, res, next) => {
-    conn.query('UPDATE revenue_rates SET revenue_rate=? WHERE user_type=7',[req.body.transporterRate],(err, result1) => {
+exports.getRevenueRates = (req, res, next) => {
+    conn.query('SELECT * FROM revenue_rates',(err, result) => {
         if (err) {
             return next(new AppError(err, 500));
         }
-        conn.query('UPDATE revenue_rates SET revenue_rate=? WHERE user_type=3',[req.body.farmerRate],(err, result2) => {
-            if (err) {
-                return next(new AppError(err, 500));
-            }
-            conn.query('UPDATE revenue_rates SET revenue_rate=? WHERE user_type=8',[req.body.wastageRate],(err, result3) => {
-                if (err) {
-                    return next(new AppError(err, 500));
-                }
-                res.status(200).json({
-                    status: 'successfully updated revenue rates',
-                    });
+        res.status(200).json({
+            status: 'successfully retrieved revenue rates',
+            data : result
             });
     });
-});
+};
+
+exports.updateFarmerRevenueRate = (req, res, next) => {
+    conn.query('UPDATE revenue_rates SET revenue_rate=? WHERE user_type="3"',[req.params.revenueRate],(err, result) => {
+        if (err) {
+            return next(new AppError(err, 500));
+        }
+        res.status(200).json({
+            status: 'successfully updated revenue rates',
+            data : result
+            });
+    });
+};
+
+exports.updateTranporterRevenueRate = (req, res, next) => {
+    conn.query('UPDATE revenue_rates SET revenue_rate=? WHERE user_type="7"',[req.params.revenueRate],(err, result) => {
+        if (err) {
+            return next(new AppError(err, 500));
+        }
+        res.status(200).json({
+            status: 'successfully updated revenue rates',
+            data : result
+            });
+    });
+};
+
+exports.updateWRCRevenueRate = (req, res, next) => {
+    conn.query('UPDATE revenue_rates SET revenue_rate=? WHERE user_type="8"',[req.params.revenueRate],(err, result) => {
+        if (err) {
+            return next(new AppError(err, 500));
+        }
+        res.status(200).json({
+            status: 'successfully updated revenue rates',
+            data : result
+            });
+    });
 };
