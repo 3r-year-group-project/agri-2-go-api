@@ -34,7 +34,7 @@ router.route('/orderhandler/recievedorderdetailsupdate')
 
 router.route('/paymethandler/recievedorderupdate')
     .post(paymentController.payRemainingAmount);
-router.post('/remain/webhook', paymentController.remainWebhookhandler);
+
 
 router.route('/stocks/getstock')
     .post(requestController.getStockDetails);    
