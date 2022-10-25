@@ -43,3 +43,33 @@ exports.vegetables = (req, res, next) => {
     });  
     console.log(q.sql);
 };
+
+exports.farmerLocation = (req, res, next) => {
+    let sql = "SELECT id FROM user WHERE email=?"
+    conn.query(sql, [req.body.email], (err, data) => {
+        if(err) return next(new AppError(err,500));
+        let id = data[0].id;
+        sql = "SELECT longitude, latitude FROM `location` WHERE user_id=?;"
+        let values = [id]
+        let q = conn.query(sql, values, (err, data1) => {
+            if(err) return next(new AppError(err,500));
+            res.status(200).json({
+                status: 'successfully got farmer location',
+                data: data1
+            });
+        });
+    })
+};
+
+exports.marketLocation = (req, res, next) => {
+    let sql = "SELECT longitude, latitude FROM `economic_center` WHERE name=?;"
+    let values = [req.body.market]
+    let q = conn.query(sql, values, (err, data1) => {
+        if(err) return next(new AppError(err,500));
+        res.status(200).json({
+            status: 'successfully got market location',
+            data: data1
+        });
+    });  
+    console.log(q.sql);
+};

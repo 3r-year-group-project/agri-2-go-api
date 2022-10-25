@@ -6,8 +6,15 @@ const requstsControllers = require('../../controllers/farmer/requests/requests')
 const dashboardController = require('../../controllers/users/dashboard/index')
 const viewPriceController = require('../../controllers/farmer/view-prices')
 
+
 router.route('/viewprice/pricefluctuations')
     .post(viewPriceController.minMaxPrice)
+
+router.route('/viewprice/farmerlocation')
+    .post(viewPriceController.farmerLocation)
+
+router.route('/viewprice/marketlocation')
+    .post(viewPriceController.marketLocation)
 
 router.route('/viewprice/markets')
     .get(viewPriceController.markets)
