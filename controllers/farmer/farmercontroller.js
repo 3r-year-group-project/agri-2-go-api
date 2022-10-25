@@ -21,7 +21,7 @@ function getUserID(email){
 exports.addNewRequest = (req, res, next) => {
     let status = 1;
     console.log("udhskjbgfuisdhfuiodshf");
-    let randomCode = Math.floor(1000 + Math.random() * 9999);
+    let randomCode = Math.floor(0000 + Math.random() * 9999);
     let sql = "SELECT id FROM user WHERE email=?"
     conn.query(sql, [req.body.email], (err, data) => {
         if(err) return next(new AppError(err,500));
@@ -276,9 +276,9 @@ exports.getVegetableList = (req, res, next) => {
                 data: data1
             });
         }); 
-
+        console.log(q.sql);
         
-        })
+        });
 
     }
 
