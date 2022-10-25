@@ -65,25 +65,28 @@ exports.wastageOrderFunctions = async(req, res, next) => {
                     console.log(results)
                 })
             };
-        
-            // case "Cancel":
-            //     {
-            //          console.log('exec')
-            //          let sqlQuery = `UPDATE wastage_orders SET status = 'cancelled' WHERE order_id = ${orderId};`;
-            //          conn.query(sqlQuery,(err, results)=>{
-            //              if(err) return next(new AppError(err));
-                         
-            //                  res.status(200).json({
-            //                      status: 'worders_status_change',
-            //                      data: results
-            //                  })
-            //              console.log(results)
-            //          })
-            //      };
+        case "Cancel":
+            {
+
+            }
         break;
     }
 
 }  
+
+exports.declineWastage = async(req, res)=>{
+
+    const {id} = req.body
+    let sqlQuery = `UPDATE wastage_details SET declined=1 WHERE id=${id}`;
+    conn.query( sqlQuery, (err, results)=>{
+        if(err) return console.log(err);
+        res.status(200).json({
+            status: 'declined_request',
+            data: results
+        })
+        
+    })
+}
 
 exports.getWastageDetails = async(req, res, next)=> {
     let sqlQuery = "SELECT * FROM wastage_details";

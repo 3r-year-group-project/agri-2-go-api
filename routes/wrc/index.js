@@ -34,5 +34,7 @@ router.route('/wastage_detail_user/:id')
     .get(wastageController.getUserInfo)
 router.route('/wastage_add_request')
     .post(wastageController.addWastageOrderRequest)
+router.route('/wastage_decline_request')
+    .post(wastageController.declineWastage)
 
 module.exports = router;
