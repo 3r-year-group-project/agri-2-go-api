@@ -12,6 +12,7 @@ const farmerRouter = require('./routes/farmer/index');
 const wrcRouter = require('./routes/wrc/index');
 const stockbuyerRouter = require('./routes/stockbuyer/index');
 const transporterRouter = require('./routes/transporter/index');
+const adminRouter = require('./routes/admin/index');
 
 const AppError = require('./utils/appError');
 const { error } = require('console');
@@ -31,8 +32,10 @@ app.use(cors(), function(req, res, next) {
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept"
   );
+  res.header("Access-Control-Allow-Methods", "GET, POST","PUT");
   next();
 });
+
 
 
 
@@ -42,8 +45,7 @@ app.use('/api/farmer',farmerRouter);
 app.use('/api/wrc',wrcRouter);
 app.use('/api/stockbuyer',stockbuyerRouter);
 app.use('/api/transporter',transporterRouter);
-
-
+app.use('/api/admin',adminRouter);
 app.use("/public", express.static(path.join(__dirname, 'public')));
 
 

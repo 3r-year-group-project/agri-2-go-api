@@ -88,9 +88,9 @@ exports.insertShopDetails = (req, res, next) => {
 
     conn.query(sql,values,(err,data)=>{
         if(err) return next(new AppError(err,500));
-        sql1 = "UPDATE user SET user_type = ? , create_date=CURDATE() WHERE id = ?";
+        let sql1 = "UPDATE user SET user_type = ? , create_date=CURDATE() WHERE id = ?";
         let v1 = [
-            req.body.userType,
+            5,
             req.body.id
 
         ];
