@@ -235,3 +235,27 @@ exports.getSingleWastageType =  async (req, res, next) => {
         
     });  
 }
+
+exports.getWastageOrderDetails = async(req,res,next) => {
+
+    
+    console.log(req.body.sellerId)
+    console.log(req.body.orderId)
+    let sql1 = "SELECT id FROM user WHERE email=?"
+        conn.query(sql1, [req.body.email], (err, data) => {
+        if(err) return next(new AppError(err,500));
+        
+        let id = data[0].id;
+        console.log(id);
+        
+    
+    let sql = "SELECT u.first_name,u.last_name,u.address1,u.address2,o.order_name,o.pickup_date,o.order_date,o.status,d.quantity,d.quality,d.price FROM wastage_orders o,wastage_details d,user u WHERE (o.seller_id = ? AND o.wrc_id= ?) AND o.seller_id = u.id AND o.order_id = d.id AND o.order_id = ?";
+    conn.query(sql,[req.body.sellerId,id,req.body.orderId],(err,data) => {
+        if(err) return next(new AppError(err));
+        res.status(200).json({
+            status : 'Order Details gained',
+            data : data
+        });
+    })
+})
+}
