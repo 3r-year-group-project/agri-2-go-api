@@ -90,3 +90,15 @@ exports.clearNotifications = (req, res, next) => {
     );
     });
 };
+
+exports.getRevenueRates = (req, res, next) => {
+    conn.query('SELECT * FROM revenue_rates',(err, result) => {
+        if (err) {
+            return next(new AppError(err, 500));
+        }
+        res.status(200).json({
+            status: 'successfully retrieved revenue rates',
+            data : result
+            });
+    });
+};
