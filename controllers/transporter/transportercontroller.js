@@ -3,6 +3,8 @@ const { query } = require('express');
 const { connect } = require('../../services/db');
 const conn = require('../../services/db');
 const AppError = require('../../utils/appError');
+const sendEmail = require('../../utils/sendEmail');
+const sendText = require('../../utils/sendText');
 
 function getUserID(email){
     let sql = "SELECT id FROM user WHERE email=?"
@@ -176,7 +178,6 @@ exports.declineRequest = async (req, res, next) => {
                 console.log(data6);
                 let email = data6[0].email;
                 let phone = data6[0].phone;
-                let message = "You have a new request from "+req.body.email;
                 sendEmail.sendEmail(email,'Agri2-GO','Your transport request is canceled');
                 sendText.sendText(phone,'Your transport request is canceled.');
             });
@@ -391,3 +392,14 @@ exports.getAllTransactions = (req,res,next) => {
         })
     })
 }
+
+exports.getCode = (req, res, next) => {
+    let q = conn.query('SELECT selling_request.code FROM selling_request,transport_request WHERE transport_request.id=? AND transport_request.selling_request_id=selling_request.id AND transport_request.status="4"',[req.params.id],(err,data1)=>{
+        if(err) return next(new AppError(err,500));
+        res.status(200).json({
+            status: 'successfully get the code',
+            data: data1
+        });
+    });
+    console.log(q.sql);
+};
