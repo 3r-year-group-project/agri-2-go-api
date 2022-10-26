@@ -153,7 +153,7 @@ exports.getTransactionDetails = (req,res,next) => {
         let id = data[0].id;
 
 
-        let sql2 = "SELECT p.date_time,p.status,p.min_advance,u.first_name,u.last_name FROM paid_orders p,user u WHERE p.buyer_id = ? AND p.farmer_id=u.id" 
+        let sql2 = "SELECT p.advance_date_time,p.payment_status,p.min_advance,u.first_name,u.last_name FROM paid_orders p,user u WHERE p.buyer_id = ? AND p.farmer_id=u.id" 
         conn.query(sql2,[id],(err, data1) => {
         if(err) return next(new AppError(err,500));
         res.status(200).json({
