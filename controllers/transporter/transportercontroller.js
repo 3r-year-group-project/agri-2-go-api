@@ -207,7 +207,6 @@ exports.checkExistChargers = async (req, res, next) => {
         else{           
             res.status(200).json({
                 status: 'not exist',
-                data: data1,
                 code:false
             });
         }
@@ -374,3 +373,21 @@ exports.setChargers = async (req, res, next) => {
         console.log(s.sql);
     }
 };
+
+exports.getAllTransactions = (req,res,next) => {
+    let sql1 = "SELECT id FROM user WHERE email=?"
+    conn.query(sql1, [req.body.email], (err, data) => {
+        if(err) return next(new AppError(err,500));
+        console.log(data);
+        let id = data[0].id;
+
+        let sql2 = "SELECT t.date,u.first_name,u.last_name,t.payment,t.fund_release_status FROM transport_request t, user u WHERE t.transporter_id = ? AND t.transporter_id = u.id;"
+        conn.query(sql2,[id],(err,data1)=>{
+            if(err) return next(new AppError(err,500));
+            res.status(200).json({
+                status: 'successfully get all transactions',
+                data: data1
+            });
+        })
+    })
+}
