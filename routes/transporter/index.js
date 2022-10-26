@@ -67,5 +67,8 @@ router.route('/request/starttrip')
 router.route('/request/getAllTransactions') 
     .post(tControllers.getAllTransactions);
 
+router.route('/request/getcode/:id')
+    .get(tControllers.getCode);
+
 
 module.exports = router;
