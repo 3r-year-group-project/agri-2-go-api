@@ -1,8 +1,8 @@
 const { query } = require('express');
 const conn = require('../../../services/db')
 const AppError = require('../../../utils/appError');
-const emailSender = require('../../../utils/sendEmail');
-const smsSender = require('../../../utils/sendText');
+const sendEmail = require('../../../utils/sendEmail');
+const sendText = require('../../../utils/sendText');
 
 function getUserID(email){
     let sql = "SELECT id FROM user WHERE email=?"

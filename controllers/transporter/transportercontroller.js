@@ -5,7 +5,6 @@ const conn = require('../../services/db');
 const AppError = require('../../utils/appError');
 const sendEmail = require('../../utils/sendEmail');
 const sendText = require('../../utils/sendText');
-
 function getUserID(email){
     let sql = "SELECT id FROM user WHERE email=?"
     return new Promise((resolve)=>{

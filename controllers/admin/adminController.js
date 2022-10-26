@@ -13,8 +13,7 @@ exports.FarmerRevenue = (req, res, next) => {
         }
         let farmerRevenueRate = (100-result1[0].revenue_rate)/100;
         let sql = 'SELECT paid_orders.order_id,((SUM(paid_orders.min_advance+paid_orders.remaining_payment) - transport_request.payment)*'+farmerRevenueRate+') AS money , bank_account.bank_name , bank_account.branch_name, bank_account.account_name, bank_account.account_number FROM bank_account,paid_orders,transport_request WHERE paid_orders.payment_status = "delivered" AND paid_orders.farmer_id = bank_account.user_id AND paid_orders.fund_release_status="0" AND transport_request.selling_request_id=paid_orders.request_id GROUP BY paid_orders.order_id';
-        console.log(sql);
-        conn.query(sql,(err, result) => {
+        let s1 = conn.query(sql,(err, result) => {
             if (err) {
                 return next(new AppError(err, 500));
             }
@@ -27,6 +26,7 @@ exports.FarmerRevenue = (req, res, next) => {
                 });
             
         });
+        console.log(s1.sql);
     });
     
 };
