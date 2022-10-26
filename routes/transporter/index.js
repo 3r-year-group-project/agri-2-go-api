@@ -64,5 +64,8 @@ router.route('/request/getall/accepted')
 router.route('/request/starttrip')
     .post(tControllers.startTrip);
 
+router.route('/request/getAllTransactions') 
+    .post(tControllers.getAllTransactions);
+
 
 module.exports = router;
