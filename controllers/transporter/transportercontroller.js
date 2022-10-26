@@ -207,7 +207,6 @@ exports.checkExistChargers = async (req, res, next) => {
         else{           
             res.status(200).json({
                 status: 'not exist',
-                data: data1,
                 code:false
             });
         }
