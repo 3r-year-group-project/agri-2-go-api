@@ -267,7 +267,7 @@ exports.getVegetableList = (req, res, next) => {
         console.log(data);
         let id = data[0].id;
 
-        let sql2 = "SELECT p.date_time,p.min_advance,p.status,u.first_name,u.last_name FROM paid_orders p,user u WHERE p.farmer_id = ? AND p.buyer_id = u.id"; 
+        let sql2 = "SELECT p.advance_date_time,p.min_advance,p.remaining_payment,p.payment_status,u.first_name,u.last_name FROM paid_orders p,user u WHERE p.farmer_id = ? AND p.buyer_id = u.id"; 
         let values = [id]
         let q = conn.query(sql2, values, (err, data1) => {
             if(err) return next(new AppError(err,500));

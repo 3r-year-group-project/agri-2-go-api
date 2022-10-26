@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const controllers = require('../../controllers/wrc/registration/register');
+const wastageController = require('../../controllers/wastage/index');
+
 const dashboardController = require('../../controllers/users/dashboard/index')
 
 router.route('/dashboard/best_selling_items')
@@ -9,7 +11,6 @@ router.route('/dashboard/best_selling_items')
 router.route('/dashboard/user_counts')
     .get(dashboardController.userCounts)
 
-const wastageController = require('../../controllers/wastage/index');
 router.route('/registration/paymentPlan')
     .post(controllers.paymentplanInsert);
 
@@ -44,6 +45,10 @@ router.route('/wastage_add_request')
     .post(wastageController.addWastageOrderRequest)
 router.route('/wastage_decline_request')
     .post(wastageController.declineWastage)
+router.route('/wastage_search')
+    .post(wastageController.searchForWastageItems)
+router.route('/order_list_status_filter')
+    .post(wastageController.getWastageOrdersStatus)
 router.route('/wastage_orders/getOrderDetails') 
     .post(wastageController.getWastageOrderDetails)
 

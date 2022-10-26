@@ -65,14 +65,39 @@ exports.wastageOrderFunctions = async(req, res, next) => {
                     console.log(results)
                 })
             };
+        break;
         case "Cancel":
             {
-
+                console.log('exec')
+                let sqlQuery = `UPDATE wastage_orders SET status = 'cancelled' WHERE order_id = ${orderId};`;
+                conn.query(sqlQuery,(err, results)=>{
+                    if(err) return next(new AppError(err));
+                    
+                        res.status(200).json({
+                            status: 'worders_status_change',
+                            data: results
+                        })
+                    console.log(results)
+                })
             }
         break;
     }
 
 }  
+
+exports.getWastageOrdersStatus = async(req, res, next)=>{
+
+    const {status} = req.body
+    let sqlQuery = `SELECT * FROM wastage_orders WHERE status='${status}'`
+    conn.query( sqlQuery, (err, results)=>{
+        if(err) console.log(err)
+        res.status(200).json({
+            status: 'wastage_details_status_filter',
+            data: results
+        })
+        
+    })
+}
 
 exports.declineWastage = async(req, res)=>{
 
@@ -85,6 +110,22 @@ exports.declineWastage = async(req, res)=>{
             data: results
         })
         
+    })
+}
+
+
+exports.searchForWastageItems = async(req,res, next )=>{
+
+    const {search_query} = req.body;
+    console.log(search_query)
+    let sqlQuery = `SELECT * from wastage_details WHERE vegetable LIKE '%${search_query}%'`
+    conn.query(sqlQuery,(err, results)=>{
+        if(err) return console.log(err);
+        res.status(200).json({
+            status: 'GetPaidOrders',
+            data: results
+        })
+        console.log(results)
     })
 }
 
@@ -165,9 +206,12 @@ exports.addWastageOrderRequest = async(req, res, next)=>{
 const addRequestOrder = async(userInfo, orderInfo, pickUpDate, sellerInfo, wastage_details_id, userId)=>{
     let sqlQuery2 = `INSERT INTO wastage_orders (order_date, order_id, wrc_id, seller_id, order_name, pickup_date, status ) VALUES ( '${currentDate}', ${wastage_details_id}, ${userId[0].id}, ${sellerInfo.id}, '${orderInfo.vegetable}', '${pickUpDate}','pending')`
         
-    await conn.query(sqlQuery2, (err, results)=>{
-         if(err) return console.log(err)
-         console.log(results)
+    await conn.query(sqlQuery2, (err, results, next)=>{
+         if(err) return next(new AppError(err));
+         res.status(200).json({
+            status : 'Accept request submitted',
+            data : results
+        });
      })
 }
 }
